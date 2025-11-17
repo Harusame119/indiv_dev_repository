@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<title>PTL101:メインメニュー</title>
+</head>
+<body>
+	<!-- タイトル -->
+	<div class="container">
+		<h1 th:text="#{system.title}"></h1>
+	</div>
+
+	<!-- コンテンツエリア -->
+	<div class="container shadow-sm pt-4 pb-4 pr-3 pl-3 mb-5 bg-body rounded border border-3" style="background-color: #f5f5f5;">
+		<h3 th:text="#{system.subtitle.expense}"></h3>
+		<table class="table">
+			<tr>
+				<td><a href="http://localhost:8080/E101_EV001">出費登録</a></td>
+			</tr>
+			<tr>
+				<td><a href="http://localhost:8080/E102_EV001">出費照会</a></td>
+			</tr>
+			<tr>
+				<td><a href="http://localhost:8080/C101_EV001">帳票出力</a></td>
+			</tr>
+		</table>
+		<h3 th:text="#{system.subtitle.test}"></h3>
+		<table class="table">
+			<tr>
+				<td><a href="http://localhost:8080/Test101_EV001">遊び</a></td>
+			</tr>
+		</table>
+	</div>
+
+</body>
+</html>

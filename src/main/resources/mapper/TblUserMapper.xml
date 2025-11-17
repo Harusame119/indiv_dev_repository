@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespaceはMapperインターフェースの完全修飾名 -->
+<mapper namespace="com.expenses.springboot.login.repository.TblUserMapper">
+
+  <!-- ユーザー名で検索するSQL -->
+  <select id="findByUserId" resultType="com.expenses.springboot.entity.TblUserEntity">
+    SELECT USER_ID, USER_PASS, USER_ROLE, DELETE_FLG
+    FROM TBL_USER
+    WHERE USER_ID = #{userId}
+  </select>
+
+</mapper>
