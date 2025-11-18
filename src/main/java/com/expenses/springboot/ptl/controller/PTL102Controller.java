@@ -9,16 +9,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
- * ポータル画面コントローラー
+ * サブメニュー(家計簿)画面コントローラー
  */
 @Controller
-public class PTL101Controller {
+public class PTL102Controller {
 
-	@RequestMapping(value="/ptl101" ,method=RequestMethod.GET)
+	@RequestMapping(value="/ptl102_EV001" ,method=RequestMethod.GET)
 	public String diplay(Model model) {
 
 		// 遷移先画面名
-		String dispNm = "PTL101";
+		String dispNm = "PTL102";
 
 		// 画面遷移
 		return dispNm;

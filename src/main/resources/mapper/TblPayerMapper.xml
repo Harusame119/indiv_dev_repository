@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespaceはMapperインターフェースの完全修飾名 -->
+<mapper namespace="com.expenses.springboot.repository.TblPayerMapper">
+
+  <!-- ユーザー名で検索するSQL -->
+  <select id="findAll" resultType="com.expenses.springboot.entity.TblPayerEntity">
+    SELECT PAYER_ID, PAYER_NAME
+    FROM TBL_PAYER
+  </select>
+
+</mapper>

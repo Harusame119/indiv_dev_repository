@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespaceはMapperインターフェースの完全修飾名 -->
+<mapper namespace="com.expenses.springboot.repository.TblExpenseMapper">
+
+  <!-- 全検索 -->
+  <select id="findAll" resultType="com.expenses.springboot.entity.TblExpenseEntity">
+    SELECT ID, AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, RESISTER_DATE
+    FROM TBL_EXPENSE
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insertExpense" parameterType="com.expenses.springboot.entity.TblExpenseEntity" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO TBL_EXPENSE (AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, RESISTER_DATE)
+    VALUES (#{amount}, #{storeId}, #{categoryId}, #{payerId}, #{paymentDate}, #{splitFlg}, #{remarks}, #{resisterDate})
+  </insert>
+
+</mapper>

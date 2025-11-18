@@ -21,7 +21,7 @@ public class SecurityConfig {
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/ptl", true)
+                .defaultSuccessUrl("/ptl101", true)
                 .permitAll()
             )
             .logout(logout -> logout.permitAll());
