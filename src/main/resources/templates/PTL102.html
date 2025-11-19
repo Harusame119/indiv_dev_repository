@@ -17,7 +17,7 @@
 				</div>
 				<div class="col-6 d-flex justify-content-end align-items-center">
 					<div class="me-3 mr-3">
-						<h5 th:text="'ログイン者：' + *{userName}"></h5>
+						<h5 th:text="'ログイン者：' + ${session.userName}"></h5>
 					</div>
 					<div>
 						<form method="get" action="/ptl101">

@@ -7,6 +7,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+
+import com.expenses.springboot.login.handler.CustomAuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -21,7 +24,7 @@ public class SecurityConfig {
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/ptl101", true)
+                .successHandler(customAuthenticationSuccessHandler())
                 .permitAll()
             )
             .logout(logout -> logout.permitAll());
@@ -33,6 +36,11 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         // BCrypt のコスト値（ストレッチ回数）を指定。デフォルトは 10
         return new BCryptPasswordEncoder(10);
+    }
+
+    @Bean
+    AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
+        return new CustomAuthenticationSuccessHandler();
     }
 }
 

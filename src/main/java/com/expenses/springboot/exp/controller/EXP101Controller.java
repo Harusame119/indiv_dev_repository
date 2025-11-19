@@ -4,7 +4,6 @@
 package com.expenses.springboot.exp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,7 +31,7 @@ public class EXP101Controller {
 	 * 初期表示メソッド
 	 */
 	@RequestMapping(value="/EXP101_EV001" ,method=RequestMethod.GET)
-	public String diplay(Model model, Authentication auth) {
+	public String diplay(Model model) {
 
 		// 遷移先画面名
 		String dispNm = ExConstant.DISPNM_EXP101;
@@ -42,9 +41,6 @@ public class EXP101Controller {
 
 		// formを設定
 		model.addAttribute("formDto", formDto);
-
-		// ログインユーザの情報設定
-		model.addAttribute("userName", auth.getName());
 
 		// 画面遷移
 		return dispNm;
@@ -61,8 +57,7 @@ public class EXP101Controller {
 			@RequestParam("payerId") String payerKey,
 			@Validated EXP101FormDto formDto,
 			BindingResult result,
-			Model model,
-			Authentication auth) {
+			Model model) {
 
 		// 遷移先画面名
 		String dispNm = ExConstant.DISPNM_EXP101;
@@ -118,11 +113,13 @@ public class EXP101Controller {
 
 		}
 
+		// プルダウンの初期選択項目を設定
+		model.addAttribute("selectedStoreKey", storeKey);
+		model.addAttribute("selectedCategoryKey", categoryKey);
+		model.addAttribute("selectedPayerKey", payerKey);
+
 		// formを設定
 		model.addAttribute("formDto", formDto);
-
-		// ログインユーザの情報設定
-		model.addAttribute("userName", auth.getName());
 
 		// 画面遷移
 		return dispNm;

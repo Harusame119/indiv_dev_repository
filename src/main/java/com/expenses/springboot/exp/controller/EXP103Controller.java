@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -50,8 +49,7 @@ public class EXP103Controller {
 	 */
 	@RequestMapping(value="/EXP103_EV001" ,method=RequestMethod.POST)
 	public String display(@RequestParam("id") Integer id,
-			Model model,
-			Authentication auth) {
+			Model model) {
 
 		// 遷移先画面名
 		String dispNm = ExConstant.DISPNM_EXP103;
@@ -85,9 +83,6 @@ public class EXP103Controller {
 		// formを設定
 		model.addAttribute("formDto", formDto);
 
-		// ログインユーザの情報設定
-		model.addAttribute("userName", auth.getName());
-
 		// 画面遷移
 		return dispNm;
 
@@ -97,7 +92,7 @@ public class EXP103Controller {
 	 * 出費照会（詳細画面へのリターン）メソッド
 	 */
 	@RequestMapping(value="/EXP103_EV002" ,method=RequestMethod.POST)
-	public String returnToE102(HttpSession session, Model model, Authentication auth) throws Exception {
+	public String returnToE102(HttpSession session, Model model) throws Exception {
 
 		// 遷移先画面名
 		String dispNm = ExConstant.DISPNM_EXP102;
@@ -152,9 +147,6 @@ public class EXP103Controller {
 		// formを設定
 		model.addAttribute("formDto", formDto);
 
-		// ログインユーザの情報設定
-		model.addAttribute("userName", auth.getName());
-
 		// 画面遷移
 		return dispNm;
 
@@ -167,8 +159,7 @@ public class EXP103Controller {
 	public String delete(@ModelAttribute("formDto")
 			@Validated EXP103FormDto formDto,
 			HttpSession session,
-			Model model,
-			Authentication auth) throws Exception {
+			Model model) throws Exception {
 
 		// 遷移先画面名
 		String dispNm = ExConstant.DISPNM_EXP102;
@@ -236,9 +227,6 @@ public class EXP103Controller {
 		// formを設定
 		model.addAttribute("formDto", conFormDto);
 
-		// ログインユーザの情報設定
-		model.addAttribute("userName", auth.getName());
-
 		// 画面遷移
 		return dispNm;
 	}
@@ -257,8 +245,7 @@ public class EXP103Controller {
 			@RequestParam("selectedPayerKey") String storePayerBef,
 			@Validated EXP103FormDto formDto,
 			BindingResult result,
-			Model model,
-			Authentication auth) {
+			Model model) {
 
 		// 遷移先画面名
 		String dispNm = ExConstant.DISPNM_EXP103;
@@ -282,9 +269,6 @@ public class EXP103Controller {
 
 		// formを設定
 		model.addAttribute("formDto", formDto);
-
-		// ログインユーザの情報設定
-		model.addAttribute("userName", auth.getName());
 
 		return dispNm;
 	}

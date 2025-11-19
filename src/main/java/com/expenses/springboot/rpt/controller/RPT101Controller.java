@@ -6,7 +6,6 @@ package com.expenses.springboot.rpt.controller;
 import java.util.Calendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,7 +35,7 @@ public class RPT101Controller {
 	 * 初期表示メソッド
 	 */
 	@RequestMapping(value="/RPT101_EV001" ,method=RequestMethod.GET)
-	public String display(Model model, Authentication auth) {
+	public String display(Model model) {
 
 		// 遷移先画面名
 		String dispNm = ExConstant.DISPNM_RPT101;
@@ -62,9 +61,6 @@ public class RPT101Controller {
 		// formを設定
 		model.addAttribute("formDto", formDto);
 
-		// ログインユーザの情報設定
-		model.addAttribute("userName", auth.getName());
-
 		// 画面遷移
 		return dispNm;
 
@@ -79,8 +75,7 @@ public class RPT101Controller {
 			@RequestParam("targetMonth") String targetMonth,
 			@Validated RPT101FormDto formDto,
 			BindingResult result,
-			Model model,
-			Authentication auth) {
+			Model model) {
 
 		// 初期化処理
 		// 遷移先画面名
@@ -132,9 +127,6 @@ public class RPT101Controller {
 
 		// formを設定
 		model.addAttribute("formDto", formDto);
-
-		// ログインユーザの情報設定
-		model.addAttribute("userName", auth.getName());
 
 		// 画面遷移
 		return dispNm;
