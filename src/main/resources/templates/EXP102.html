@@ -19,7 +19,7 @@
 				</div>
 				<div class="col-6 d-flex justify-content-end align-items-center">
 					<div class="me-3 mr-3">
-						<h5 th:text="*{userName}"></h5>
+						<h5 th:text="'ログイン者：' + *{userName}"></h5>
 					</div>
 					<div>
 						<form method="get" action="/ptl102_EV001">
@@ -49,7 +49,9 @@
 
 	<!-- コンテンツエリア -->
 	<div class="container shadow-sm pt-4 pb-4 pr-3 pl-3 mb-5 bg-body rounded border border-3" style="background-color: #f5f5f5;">
-		<form method="post" action="/EXP102_EV001" th:object="${formDto}">
+		<form method="post" action="/EXP102_EV002" th:object="${formDto}">
+			<!-- CSRF hidden フィールド -->
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 			<div class="row">
 				<div class="form-group col">
 					<label for="pulStore">店舗</label>
@@ -132,6 +134,8 @@
 				<tbody>
 					<tr th:each="entity : ${formDto.resultList}">
 						<form method="post" action="/EXP103_EV001" th:object="${entity}">
+							<!-- CSRF hidden フィールド -->
+							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 							<th scope="row">
 								[[${entity.paymentDate}]]
 							</th>

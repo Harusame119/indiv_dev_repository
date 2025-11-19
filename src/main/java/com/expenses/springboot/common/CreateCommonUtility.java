@@ -17,6 +17,11 @@ public class CreateCommonUtility {
 		Map<String, String> map  = new LinkedHashMap<>();
 		map.put("2024", "2024年");
 		map.put("2025", "2025年");
+		map.put("2026", "2026年");
+		map.put("2027", "2027年");
+		map.put("2028", "2028年");
+		map.put("2029", "2029年");
+		map.put("2030", "2030年");
 		return map;
 
 	}

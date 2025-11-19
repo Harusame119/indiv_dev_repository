@@ -12,10 +12,56 @@
     FROM TBL_EXPENSE
   </select>
 
+  <!-- 主キー検索 -->
+  <select id="findById" parameterType="java.lang.Integer" resultType="com.expenses.springboot.entity.TblExpenseEntity">
+    SELECT ID, AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, RESISTER_DATE
+    FROM TBL_EXPENSE
+      <where>
+        ID = #{id}
+      </where>
+  </select>
+
+  <!-- 条件検索 -->
+  <select id="findByCondition" parameterType="com.expenses.springboot.exp.dto.ExpenseSearchConditionDto" resultType="com.expenses.springboot.entity.TblExpenseEntity">
+    SELECT ID, AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, RESISTER_DATE
+    FROM TBL_EXPENSE
+      <where>
+      <!-- 日付範囲 -->
+      <if test="startDate != null and endDate != null">
+        PAYMENT_DATE BETWEEN #{startDate} AND #{endDate}
+      </if>
+      <!-- storeIdが0以外なら条件に追加 -->
+      <if test="storeId != null and storeId != 0">
+        AND STORE_ID = #{storeId}
+      </if>
+      <!-- categoryIdが0以外なら条件に追加 -->
+      <if test="categoryId != null and categoryId != 0">
+        AND CATEGORY_ID = #{categoryId}
+      </if>
+      <!-- payerIdが0以外なら条件に追加 -->
+      <if test="payerId != null and payerId != 0">
+        AND PAYER_ID = #{payerId}
+      </if>
+      <!-- remarksが空文字でなければ部分一致検索 -->
+      <if test="remarks != null and remarks != ''">
+        AND REMARKS LIKE CONCAT('%', #{remarks}, '%')
+      </if>
+    </where>
+    ORDER BY PAYMENT_DATE DESC
+  </select>
+
   <!-- 登録 -->
-  <insert id="insertExpense" parameterType="com.expenses.springboot.entity.TblExpenseEntity" useGeneratedKeys="true" keyProperty="id">
+  <insert id="insert" parameterType="com.expenses.springboot.entity.TblExpenseEntity" useGeneratedKeys="true" keyProperty="id">
     INSERT INTO TBL_EXPENSE (AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, RESISTER_DATE)
     VALUES (#{amount}, #{storeId}, #{categoryId}, #{payerId}, #{paymentDate}, #{splitFlg}, #{remarks}, #{resisterDate})
   </insert>
+
+  <!-- 主キー削除 -->
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    DELETE FROM TBL_EXPENSE
+      <where>
+        ID = #{id}
+      </where>
+  </delete>
 
 </mapper>

@@ -20,14 +20,14 @@ public static String DATE_FORMAT_SPLIT_HYPHEN = "yyyy-MM-dd";
 
 ///* 画面名＿M101 */
 //public static String DISPNM_M101 = "M101";
-/* 画面名＿E101 */
+/* 画面名＿EXP101 */
 public static String DISPNM_EXP101 = "EXP101";
-/* 画面名＿E102 */
+/* 画面名＿EXP102 */
 public static String DISPNM_EXP102 = "EXP102";
-/* 画面名＿E103 */
+/* 画面名＿EXP103 */
 public static String DISPNM_EXP103 = "EXP103";
-///* 画面名＿C101 */
-//public static String DISPNM_C101 = "C101";
+/* 画面名＿RPT101 */
+public static String DISPNM_RPT101 = "RPT101";
 /* 画面名＿Test101 */
 public static String DISPNM_TEST101 = "Test101";
 

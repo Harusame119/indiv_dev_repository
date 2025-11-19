@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.expenses.springboot.entity.TblExpenseEntity;
+import com.expenses.springboot.exp.dto.ExpenseSearchConditionDto;
 
 @Mapper
 public interface TblExpenseMapper {
@@ -12,9 +13,16 @@ public interface TblExpenseMapper {
 	// 全検索
 	List<TblExpenseEntity> findAll();
 
-//	// 主キー検索
-//	TblExpenseEntity findById(int id);
+	// 主キー検索
+	TblExpenseEntity findById(int id);
+
+	// 条件検索
+	List<TblExpenseEntity> findByCondition(ExpenseSearchConditionDto conDto);
 
 	// 登録
-	void insertExpense(TblExpenseEntity entity);
+	void insert(TblExpenseEntity entity);
+
+	// 削除
+	void deleteById(int id);
+
 }

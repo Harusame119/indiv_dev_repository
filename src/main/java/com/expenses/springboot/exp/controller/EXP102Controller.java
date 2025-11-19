@@ -6,6 +6,7 @@ package com.expenses.springboot.exp.controller;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,7 +26,7 @@ import com.expenses.springboot.exp.service.EXP102Service;
  * 出費照会画面コントローラー
  */
 @Controller
-public class E102Controller {
+public class EXP102Controller {
 
 	@Autowired
 	EXP102Service exp102Service;
@@ -34,7 +35,7 @@ public class E102Controller {
 	 * 初期表示メソッド
 	 */
 	@RequestMapping(value="/EXP102_EV001" ,method=RequestMethod.GET)
-	public String display(Model model) {
+	public String display(Model model, Authentication auth) {
 
 		// 遷移先画面名
 		String dispNm = ExConstant.DISPNM_EXP102;
@@ -45,6 +46,9 @@ public class E102Controller {
 		// formを設定
 		model.addAttribute("formDto", formDto);
 
+		// ログインユーザの情報設定
+		model.addAttribute("userName", auth.getName());
+
 		// 画面遷移
 		return dispNm;
 
@@ -53,7 +57,7 @@ public class E102Controller {
 	/**
 	 * 出費照会メソッド
 	 */
-	@RequestMapping(value="/EXP102_EV001" ,method=RequestMethod.POST)
+	@RequestMapping(value="/EXP102_EV002" ,method=RequestMethod.POST)
 	public String find(@ModelAttribute("formDto")
 			@RequestParam("storeId") Integer storeKey,
 			@RequestParam("categoryId") Integer categoryKey,
@@ -61,7 +65,8 @@ public class E102Controller {
 			@Validated EXP102FormDto formDto,
 			BindingResult result,
 			HttpSession session,
-			Model model) {
+			Model model,
+			Authentication auth) {
 
 		// 遷移先画面名
 		String dispNm = ExConstant.DISPNM_EXP102;
@@ -117,6 +122,9 @@ public class E102Controller {
 
 		// formを設定
 		model.addAttribute("formDto", formDto);
+
+		// ログインユーザの情報設定
+		model.addAttribute("userName", auth.getName());
 
 		// 画面遷移
 		return dispNm;

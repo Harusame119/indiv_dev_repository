@@ -2,6 +2,7 @@ package com.expenses.springboot.exp.service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,9 @@ import com.expenses.springboot.entity.TblExpenseEntity;
 import com.expenses.springboot.exp.dto.EXP102FormDto;
 import com.expenses.springboot.exp.dto.EXP102ServiceFindIn;
 import com.expenses.springboot.exp.dto.EXP102ServiceFindOut;
+import com.expenses.springboot.exp.dto.ExpenseSearchConditionDto;
 import com.expenses.springboot.exp.dto.FindExpenseTblResultEntity;
+import com.expenses.springboot.repository.TblExpenseMapper;
 
 /**
  * 出費照会サービス
@@ -25,12 +28,15 @@ public class EXP102Service {
 	@Autowired
 	CreateMapService createMapService;
 
+	@Autowired
+	private TblExpenseMapper tblExpenseMapper;
+
 	/**
 	 * 初期表示情報検索メソッド
 	 */
 	public EXP102FormDto display() {
 
-		EXP102FormDto e102FormDto = new EXP102FormDto();
+		EXP102FormDto exp102FormDto = new EXP102FormDto();
 
 		// マップ作成サービス出力
 		CreateMapServiceOut mapOut = new CreateMapServiceOut();
@@ -47,15 +53,26 @@ public class EXP102Service {
 
 		// 画面初期表示項目設定
 		// 店舗プルダウンメニュー
-		e102FormDto.setPulStore(mapOut.getStoreMap());
+		exp102FormDto.setPulStore(mapOut.getStoreMap());
 
 		// 種別プルダウンメニュー
-		e102FormDto.setPulCategory(mapOut.getCategoryMap());
+		exp102FormDto.setPulCategory(mapOut.getCategoryMap());
 
 		// 支払者プルダウンメニュー
-		e102FormDto.setPulPayer(mapOut.getPayerMap());
+		exp102FormDto.setPulPayer(mapOut.getPayerMap());
 
-		return e102FormDto;
+		// 当日日付取得
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String strDate = sdf.format(date);
+
+		// 開始日
+		exp102FormDto.setStartYMDSearchCondition(strDate);
+
+		// 終了日
+		exp102FormDto.setEndYMDSearchCondition(strDate);
+
+		return exp102FormDto;
 
 	}
 
@@ -69,6 +86,9 @@ public class EXP102Service {
 
 		// 出費テーブルエンティティリスト
 		List<TblExpenseEntity> tblExpenseList = new ArrayList<>();
+
+		// 出費テーブル検索条件Entity
+		ExpenseSearchConditionDto conDto = new ExpenseSearchConditionDto();
 
 		// マップ作成サービス出力
 		CreateMapServiceOut mapOut = new CreateMapServiceOut();
@@ -91,9 +111,16 @@ public class EXP102Service {
 			// 終了日型変換
 			java.sql.Date endDate = java.sql.Date.valueOf(input.getEndDate());
 
-//			// 検索条件に従って検索
-//			tblExpenseList = expenseService.findE102(startDate, endDate, 
-//					input.getStoreId(), input.getCategoryId(), input.getPayerId(), input.getRemarks());
+			// 検索条件設定
+			conDto.setStartDate(startDate);
+			conDto.setEndDate(endDate);
+			conDto.setStoreId(input.getStoreId());
+			conDto.setCategoryId(input.getCategoryId());
+			conDto.setPayerId(input.getPayerId());
+			conDto.setRemarks(input.getRemarks());
+
+			// 検索条件に従って検索
+			tblExpenseList = tblExpenseMapper.findByCondition(conDto);
 
 			// 出力項目に設定
 			output.setStoreMap(mapOut.getStoreMap());

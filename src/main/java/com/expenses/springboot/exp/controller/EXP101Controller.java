@@ -94,8 +94,14 @@ public class EXP101Controller {
 			// 登録処理
 			exp101Service.resister(input);
 
+			// 支払日を取得
+			String paymentDate = formDto.getTextPaymentDate();
+
 			// 初期表示処理
 			formDto = exp101Service.display();
+
+			// 支払日は同じものを設定
+			formDto.setTextPaymentDate(paymentDate);
 
 			// 隠しメッセージ設定
 			StringBuffer msg = new StringBuffer();

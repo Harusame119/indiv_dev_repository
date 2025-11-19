@@ -17,7 +17,7 @@
 				</div>
 				<div class="col-6 d-flex justify-content-end align-items-center">
 					<div class="me-3 mr-3">
-						<h5 th:text="*{userName}"></h5>
+						<h5 th:text="'ログイン者：' + *{userName}"></h5>
 					</div>
 					<div>
 						<form method="get" action="/ptl101">
@@ -40,7 +40,7 @@
 				<td><a href="http://localhost:8080/EXP102_EV001">出費照会</a></td>
 			</tr>
 			<tr>
-				<td><a href="http://localhost:8080/C101_EV001">帳票出力</a></td>
+				<td><a href="http://localhost:8080/RPT101_EV001">帳票出力</a></td>
 			</tr>
 		</table>
 	</div>

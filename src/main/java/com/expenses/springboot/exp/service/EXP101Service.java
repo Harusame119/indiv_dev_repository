@@ -32,7 +32,7 @@ public class EXP101Service {
 	 */
 	public EXP101FormDto display() {
 
-		EXP101FormDto e101FormDto = new EXP101FormDto();
+		EXP101FormDto exp101FormDto = new EXP101FormDto();
 
 		// マップ作成サービス出力
 		CreateMapServiceOut mapOut = new CreateMapServiceOut();
@@ -49,24 +49,24 @@ public class EXP101Service {
 
 		// 画面初期表示項目設定
 		// 店舗プルダウンメニュー
-		e101FormDto.setPulStore(mapOut.getStoreMap());
+		exp101FormDto.setPulStore(mapOut.getStoreMap());
 
 		// 種別プルダウンメニュー
-		e101FormDto.setPulCategory(mapOut.getCategoryMap());
+		exp101FormDto.setPulCategory(mapOut.getCategoryMap());
 
 		// 支払者プルダウンメニュー
-		e101FormDto.setPulPayer(mapOut.getPayerMap());
+		exp101FormDto.setPulPayer(mapOut.getPayerMap());
 
 		// 分割フラグラジオボタン
-		e101FormDto.setRadioSplitFlg(ExConstant.SPLIT_FLG_SPLIT);
+		exp101FormDto.setRadioSplitFlg(ExConstant.SPLIT_FLG_SPLIT);
 
 		// 支払日
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String strDate = sdf.format(date);
-		e101FormDto.setTextPaymentDate(strDate);
+		exp101FormDto.setTextPaymentDate(strDate);
 
-		return e101FormDto;
+		return exp101FormDto;
 
 	}
 
@@ -106,7 +106,7 @@ public class EXP101Service {
 			tblExpenseIn.setRemarks(input.getRemarks());
 
 			// 登録処理実行
-			expenseMapper.insertExpense(tblExpenseIn);
+			expenseMapper.insert(tblExpenseIn);
 
 		} catch (Exception e) {
 			e.printStackTrace();
