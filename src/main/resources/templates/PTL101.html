@@ -7,10 +7,22 @@
 <title>PTL101:メインメニュー</title>
 </head>
 <body>
-	<!-- タイトル -->
-	<div class="container">
-		<h1 th:text="#{system.title}"></h1>
-	</div>
+	<!-- ヘッダー -->
+	<nav class="sticky-top bd-subnavbar py-1 mb-4 shadow" style="background-color:rgb(248, 225, 194);">
+		<div class="container">
+			<div class="row mb-1 mt-1">
+				<div class="col-6 d-flex">
+					<h1 th:text="#{system.title}"></h1>
+					<img th:src="@{/images/R.png}">
+				</div>
+				<div class="col-6 d-flex justify-content-end align-items-center">
+					<div class="me-3 mr-3">
+						<h5 th:text="*{userName}"></h5>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
 
 	<!-- コンテンツエリア -->
 	<div class="container shadow-sm pt-4 pb-4 pr-3 pl-3 mb-5 bg-body rounded border border-3" style="background-color: #f5f5f5;">

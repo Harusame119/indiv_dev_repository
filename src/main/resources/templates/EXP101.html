@@ -13,15 +13,19 @@
 	<nav class="sticky-top bd-subnavbar py-1 mb-4 shadow" style="background-color:rgb(248, 225, 194);">
 		<div class="container">
 			<div class="row mb-1 mt-1">
-				<h1 th:text="#{system.subtitle.expense}"></h1>
-				<img th:src="@{/images/R.png}">
-				<div style="margin-left: auto; margin-top: 7px;">
-					<h4 th:text="*{userName}"></h4>
+				<div class="col-6 d-flex">
+					<h1 th:text="#{system.subtitle.expense}"></h1>
+					<img th:src="@{/images/R.png}">
 				</div>
-				<div style="margin-left: auto; margin-top: 7px;">
-					<form form method="get" action="/ptl102_EV001">
-						<input type="submit" class="btn btn-outline-secondary" value="メインメニューへ戻る"/>
-					</form>
+				<div class="col-6 d-flex justify-content-end align-items-center">
+					<div class="me-3 mr-3">
+						<h5 th:text="*{userName}"></h5>
+					</div>
+					<div>
+						<form method="get" action="/ptl102_EV001">
+							<input type="submit" class="btn btn-outline-secondary" value="メインメニューへ戻る"/>
+						</form>
+					</div>
 				</div>
 			</div>
 		</div>
