@@ -23,12 +23,15 @@ public class EXP102FormDto {
 
 	// 店舗プルダウンメニュー
 	private Map<Integer, String> pulStore;
+	private Integer storeId;
 
 	// 種別プルダウンメニュー
 	private Map<Integer, String> pulCategory;
+	private Integer categoryId;
 
 	// 支払者プルダウンメニュー
 	private Map<Integer, String> pulPayer;
+	private Integer payerId;
 
 	// 備考検索条件
 	private String remarksSearchCondition;

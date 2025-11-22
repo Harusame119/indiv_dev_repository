@@ -54,14 +54,14 @@
 			<div class="row">
 				<div class="form-group col-3">
 					<label for="pulTargetYear">対象年</label>
-					<select name="targetYear" class="dropdown form-control">
-						<option th:each="year : ${formDto.pulTargetYear}" th:value="${year.key}" th:text="${year.value}" th:selected="${year.key == selectedYearKey}"></option>
+					<select th:field="*{targetYear}" class="dropdown form-control">
+						<option th:each="year : ${formDto.pulTargetYear}" th:value="${year.key}" th:text="${year.value}"></option>
 					</select>
 				</div>
 				<div class="form-group col-3">
 					<label for="pulTargetMonth">対象月</label>
-					<select name="targetMonth" class="dropdown form-control">
-						<option th:each="month : ${formDto.pulTargetMonth}" th:value="${month.key}" th:text="${month.value}" th:selected="${month.key == selectedMonthKey}"></option>
+					<select th:field="*{targetMonth}" class="dropdown form-control">
+						<option th:each="month : ${formDto.pulTargetMonth}" th:value="${month.key}" th:text="${month.value}"></option>
 					</select>
 				</div>
 			</div>

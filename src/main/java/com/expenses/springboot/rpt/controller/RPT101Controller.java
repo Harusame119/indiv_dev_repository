@@ -13,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.expenses.springboot.common.CreateCommonUtility;
 import com.expenses.springboot.common.ExConstant;
@@ -55,8 +54,8 @@ public class RPT101Controller {
 		String currentMonth = String.valueOf(cal.get(Calendar.MONTH) + 1);
 
 		// プルダウンの初期選択項目を設定
-		model.addAttribute("selectedYearKey", currentYear);
-		model.addAttribute("selectedMonthKey", currentMonth);
+		formDto.setTargetYear(currentYear);
+		formDto.setTargetMonth(currentMonth);
 
 		// formを設定
 		model.addAttribute("formDto", formDto);
@@ -70,10 +69,7 @@ public class RPT101Controller {
 	 * 帳票情報集計メソッド
 	 */
 	@RequestMapping(value="/RPT101_EV002" ,method=RequestMethod.POST)
-	public String find(@ModelAttribute("formDto")
-			@RequestParam("targetYear") String targetYear,
-			@RequestParam("targetMonth") String targetMonth,
-			@Validated RPT101FormDto formDto,
+	public String find(@Validated @ModelAttribute("formDto") RPT101FormDto formDto,
 			BindingResult result,
 			Model model) {
 
@@ -91,9 +87,9 @@ public class RPT101Controller {
 
 			// 帳票(月次)出力サービス集計入力設定
 			// 対象年
-			rpt101ServiceTotallingIn.setTargetYear(targetYear);
+			rpt101ServiceTotallingIn.setTargetYear(formDto.getTargetYear());
 			// 対象月
-			rpt101ServiceTotallingIn.setTargetMonth(targetMonth);
+			rpt101ServiceTotallingIn.setTargetMonth(formDto.getTargetMonth());
 			// 支払者１ ※固定値で"100"を設定
 			rpt101ServiceTotallingIn.setPayerId1(100);
 			// 支払者２ ※固定値で"101"を設定
@@ -120,10 +116,6 @@ public class RPT101Controller {
 		} else {
 			formDto.setHdnMsg(null);
 		}
-
-		// プルダウンの初期選択項目を設定
-		model.addAttribute("selectedYearKey", targetYear);
-		model.addAttribute("selectedMonthKey", targetMonth);
 
 		// formを設定
 		model.addAttribute("formDto", formDto);

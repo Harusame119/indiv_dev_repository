@@ -47,7 +47,7 @@
         AND REMARKS LIKE CONCAT('%', #{remarks}, '%')
       </if>
     </where>
-    ORDER BY PAYMENT_DATE DESC
+    ORDER BY PAYMENT_DATE DESC, ID DESC
   </select>
 
   <!-- 登録 -->

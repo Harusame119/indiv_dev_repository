@@ -112,11 +112,11 @@ public class EXP103Controller {
 
 		// 出費照会サービス検索入力設定
 		// 店舗ID
-		exp102ServiceFindIn.setStoreId((Integer) session.getAttribute("conStoreId"));
+		exp102ServiceFindIn.setStoreId(formDto.getStoreId());
 		// 種別ID
-		exp102ServiceFindIn.setCategoryId((Integer) session.getAttribute("conCategoryId"));
+		exp102ServiceFindIn.setCategoryId(formDto.getCategoryId());
 		// 支払者ID
-		exp102ServiceFindIn.setPayerId((Integer) session.getAttribute("conPayerId"));
+		exp102ServiceFindIn.setPayerId(formDto.getPayerId());
 		// 開始日
 		exp102ServiceFindIn.setStartDate(formDto.getStartYMDSearchCondition());
 		// 終了日
@@ -177,7 +177,7 @@ public class EXP103Controller {
 		// 削除処理メソッド呼び出し
 		exp103ServiceDeleteOut = exp103Service.delete(exp103ServiceDeleteIn);
 
-		// 画面DTO
+		// 画面DTO(検索条件)
 		EXP102FormDto conFormDto = (EXP102FormDto) session.getAttribute("conFormDto");
 
 		if (conFormDto == null) {
@@ -192,11 +192,11 @@ public class EXP103Controller {
 
 		// 出費照会サービス検索入力設定
 		// 店舗ID
-		exp102ServiceFindIn.setStoreId((Integer) session.getAttribute("conStoreId"));
+		exp102ServiceFindIn.setStoreId(conFormDto.getStoreId());
 		// 種別ID
-		exp102ServiceFindIn.setCategoryId((Integer) session.getAttribute("conCategoryId"));
+		exp102ServiceFindIn.setCategoryId(conFormDto.getCategoryId());
 		// 支払者ID
-		exp102ServiceFindIn.setPayerId((Integer) session.getAttribute("conPayerId"));
+		exp102ServiceFindIn.setPayerId(conFormDto.getPayerId());
 		// 開始日
 		exp102ServiceFindIn.setStartDate(conFormDto.getStartYMDSearchCondition());
 		// 終了日
@@ -218,11 +218,6 @@ public class EXP103Controller {
 		conFormDto.setPulStore(exp102ServiceFindOut.getStoreMap());
 		conFormDto.setPulCategory(exp102ServiceFindOut.getCategoryMap());
 		conFormDto.setPulPayer(exp102ServiceFindOut.getPayerMap());
-
-		// プルダウンの初期選択項目を設定
-		model.addAttribute("selectedStoreKey", (Integer) session.getAttribute("conStoreId"));
-		model.addAttribute("selectedCategoryKey", (Integer) session.getAttribute("conCategoryId"));
-		model.addAttribute("selectedPayerKey", (String) session.getAttribute("conRemarks"));
 
 		// formを設定
 		model.addAttribute("formDto", conFormDto);

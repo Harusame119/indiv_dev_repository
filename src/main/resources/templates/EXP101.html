@@ -60,14 +60,14 @@
 				</div>
 				<div class="form-group col">
 					<label for="pulStore">店舗</label>
-					<select name="storeId" class="dropdown form-control">
-						<option th:each="store : ${formDto.pulStore}" th:value="${store.key}" th:text="${store.value}" th:selected="${store.key == selectedStoreKey}"></option>
+					<select th:field="*{storeId}" class="dropdown form-control">
+						<option th:each="store : ${formDto.pulStore}" th:value="${store.key}" th:text="${store.value}"></option>
 					</select>
 				</div>
 				<div class="form-group col">
 					<label for="pulCategory">種別</label>
-					<select name="categoryId" class="dropdown form-control">
-						<option th:each="category : ${formDto.pulCategory}" th:value="${category.key}" th:text="${category.value}" th:selected="${category.key == selectedCategoryKey}"></option>
+					<select th:field="*{categoryId}" class="dropdown form-control">
+						<option th:each="category : ${formDto.pulCategory}" th:value="${category.key}" th:text="${category.value}"></option>
 					</select>
 				</div>
 			</div>
@@ -75,8 +75,8 @@
 			<div class="row">
 				<div class="form-group col">
 					<label for="pulPayer">支払者</label>
-					<select name="payerId" class="dropdown form-control">
-						<option th:each="payer : ${formDto.pulPayer}" th:value="${payer.key}" th:text="${payer.value}" th:selected="${payer.key == selectedPayerKey}"></option>
+					<select th:field="*{payerId}" class="dropdown form-control">
+						<option th:each="payer : ${formDto.pulPayer}" th:value="${payer.key}" th:text="${payer.value}"></option>
 					</select>
 				</div>
 				<div class="form-group col">

@@ -11,7 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.expenses.springboot.common.ExConstant;
 import com.expenses.springboot.exp.dto.EXP101FormDto;
@@ -51,11 +50,7 @@ public class EXP101Controller {
 	 * 出費登録メソッド
 	 */
 	@RequestMapping(value="/EXP101_EV002" ,method=RequestMethod.POST)
-	public String register(@ModelAttribute("formDto")
-			@RequestParam("storeId") String storeKey,
-			@RequestParam("categoryId") String categoryKey,
-			@RequestParam("payerId") String payerKey,
-			@Validated EXP101FormDto formDto,
+	public String register(@Validated @ModelAttribute("formDto") EXP101FormDto formDto,
 			BindingResult result,
 			Model model) {
 
@@ -68,17 +63,23 @@ public class EXP101Controller {
 		// メッセージ用金額
 		String amountMsg = formDto.getTextAmount();
 
+		// 保持しておく情報を取得
+		int storeId = formDto.getStoreId();
+		int categoryId =formDto.getCategoryId();
+		int payerId = formDto.getPayerId();
+		String paymentDate = formDto.getTextPaymentDate();
+
 		if (!result.hasErrors()) {
 
 			// 出費登録サービス登録入力設定
 			// 金額
 			input.setAmount(formDto.getTextAmount());
 			// 店舗ID
-			input.setStoreId(Integer.valueOf(storeKey));
+			input.setStoreId(formDto.getStoreId());
 			// 種別ID
-			input.setCategoryId(Integer.valueOf(categoryKey));
+			input.setCategoryId(formDto.getCategoryId());
 			// 支払者ID
-			input.setPayerId(Integer.valueOf(payerKey));
+			input.setPayerId(formDto.getPayerId());
 			// 支払日
 			input.setPaymentDate(formDto.getTextPaymentDate());
 			// 分割フラグ
@@ -89,14 +90,14 @@ public class EXP101Controller {
 			// 登録処理
 			exp101Service.resister(input);
 
-			// 支払日を取得
-			String paymentDate = formDto.getTextPaymentDate();
-
 			// 初期表示処理
 			formDto = exp101Service.display();
 
-			// 支払日は同じものを設定
+			// 保持しておく情報は同じものを設定
 			formDto.setTextPaymentDate(paymentDate);
+			formDto.setStoreId(storeId);
+			formDto.setCategoryId(categoryId);
+			formDto.setPayerId(payerId);
 
 			// 隠しメッセージ設定
 			StringBuffer msg = new StringBuffer();
@@ -112,11 +113,6 @@ public class EXP101Controller {
 			formDto = exp101Service.display();
 
 		}
-
-		// プルダウンの初期選択項目を設定
-		model.addAttribute("selectedStoreKey", storeKey);
-		model.addAttribute("selectedCategoryKey", categoryKey);
-		model.addAttribute("selectedPayerKey", payerKey);
 
 		// formを設定
 		model.addAttribute("formDto", formDto);

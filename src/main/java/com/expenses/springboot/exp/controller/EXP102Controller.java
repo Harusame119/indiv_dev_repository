@@ -13,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.expenses.springboot.common.ExConstant;
 import com.expenses.springboot.exp.dto.EXP102FormDto;
@@ -54,11 +53,7 @@ public class EXP102Controller {
 	 * 出費照会メソッド
 	 */
 	@RequestMapping(value="/EXP102_EV002" ,method=RequestMethod.POST)
-	public String find(@ModelAttribute("formDto")
-			@RequestParam("storeId") Integer storeKey,
-			@RequestParam("categoryId") Integer categoryKey,
-			@RequestParam("payerId") Integer payerKey,
-			@Validated EXP102FormDto formDto,
+	public String find(@Validated @ModelAttribute("formDto") EXP102FormDto formDto,
 			BindingResult result,
 			HttpSession session,
 			Model model) {
@@ -67,9 +62,6 @@ public class EXP102Controller {
 		String dispNm = ExConstant.DISPNM_EXP102;
 
 		// 検索条件をセッションに格納
-		session.setAttribute("conStoreId", storeKey);
-		session.setAttribute("conCategoryId", categoryKey);
-		session.setAttribute("conPayerId", payerKey);
 		session.setAttribute("conFormDto", formDto);
 
 		// 出費照会サービス検索出力
@@ -82,11 +74,11 @@ public class EXP102Controller {
 
 			// 出費照会サービス検索入力設定
 			// 店舗ID
-			exp102ServiceFindIn.setStoreId(storeKey);
+			exp102ServiceFindIn.setStoreId(formDto.getStoreId());
 			// 種別ID
-			exp102ServiceFindIn.setCategoryId(categoryKey);
+			exp102ServiceFindIn.setCategoryId(formDto.getCategoryId());
 			// 支払者ID
-			exp102ServiceFindIn.setPayerId(payerKey);
+			exp102ServiceFindIn.setPayerId(formDto.getPayerId());
 			// 開始日
 			exp102ServiceFindIn.setStartDate(formDto.getStartYMDSearchCondition());
 			// 終了日
@@ -109,11 +101,6 @@ public class EXP102Controller {
 		formDto.setPulStore(exp102ServiceFindOut.getStoreMap());
 		formDto.setPulCategory(exp102ServiceFindOut.getCategoryMap());
 		formDto.setPulPayer(exp102ServiceFindOut.getPayerMap());
-
-		// プルダウンの初期選択項目を設定
-		model.addAttribute("selectedStoreKey", storeKey);
-		model.addAttribute("selectedCategoryKey", categoryKey);
-		model.addAttribute("selectedPayerKey", payerKey);
 
 		// formを設定
 		model.addAttribute("formDto", formDto);
