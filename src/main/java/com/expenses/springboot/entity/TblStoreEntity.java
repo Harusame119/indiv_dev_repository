@@ -14,4 +14,7 @@ public class TblStoreEntity {
 
 	private String storeName;
 
+	private String userId;
+
+	private int sortOrder;
 }

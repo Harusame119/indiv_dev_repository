@@ -28,6 +28,7 @@ public class TblExpenseEntity {
 
 	private String remarks;
 
-	private Date resisterDate;
+	private Date registerDate;
 
+	private String userId;
 }

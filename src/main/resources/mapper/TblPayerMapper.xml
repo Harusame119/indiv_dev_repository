@@ -7,9 +7,13 @@
 <mapper namespace="com.expenses.springboot.repository.TblPayerMapper">
 
   <!-- ユーザー名で検索するSQL -->
-  <select id="findAll" resultType="com.expenses.springboot.entity.TblPayerEntity">
-    SELECT PAYER_ID, PAYER_NAME
+  <select id="findByUserId" parameterType="java.lang.String" resultType="com.expenses.springboot.entity.TblPayerEntity">
+    SELECT PAYER_ID, PAYER_NAME, USER_ID, SORT_ORDER
     FROM TBL_PAYER
+      <where>
+        USER_ID = #{userId}
+      </where>
+    ORDER BY SORT_ORDER
   </select>
 
 </mapper>

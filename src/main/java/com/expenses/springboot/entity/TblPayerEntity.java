@@ -14,4 +14,7 @@ public class TblPayerEntity {
 
 	private String payerName;
 
+	private String userId;
+
+	private int sortOrder;
 }

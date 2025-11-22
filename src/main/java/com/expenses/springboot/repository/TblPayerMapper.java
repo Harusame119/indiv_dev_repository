@@ -9,8 +9,8 @@ import com.expenses.springboot.entity.TblPayerEntity;
 @Mapper
 public interface TblPayerMapper {
 
-	// 全検索
-	List<TblPayerEntity> findAll();
+	// 検索(ユーザID)
+	List<TblPayerEntity> findByUserId(String userId);
 	
 //	// 主キー検索
 //	TblPayerEntity findByPayerId(int payerId);

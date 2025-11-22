@@ -10,8 +10,8 @@ import com.expenses.springboot.exp.dto.ExpenseSearchConditionDto;
 @Mapper
 public interface TblExpenseMapper {
 
-	// 全検索
-	List<TblExpenseEntity> findAll();
+	// 検索(ユーザID)
+	List<TblExpenseEntity> findByUserId(String userId);
 
 	// 主キー検索
 	TblExpenseEntity findById(int id);
@@ -22,7 +22,7 @@ public interface TblExpenseMapper {
 	// 登録
 	void insert(TblExpenseEntity entity);
 
-	// 削除
+	// 主キー削除
 	void deleteById(int id);
 
 }

@@ -7,14 +7,17 @@
 <mapper namespace="com.expenses.springboot.repository.TblExpenseMapper">
 
   <!-- 全検索 -->
-  <select id="findAll" resultType="com.expenses.springboot.entity.TblExpenseEntity">
-    SELECT ID, AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, RESISTER_DATE
+  <select id="findAll" parameterType="java.lang.String" resultType="com.expenses.springboot.entity.TblExpenseEntity">
+    SELECT ID, AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, REGISTER_DATE, USER_ID
     FROM TBL_EXPENSE
+      <where>
+        USER_ID = #{userId}
+      </where>
   </select>
 
   <!-- 主キー検索 -->
   <select id="findById" parameterType="java.lang.Integer" resultType="com.expenses.springboot.entity.TblExpenseEntity">
-    SELECT ID, AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, RESISTER_DATE
+    SELECT ID, AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, REGISTER_DATE, USER_ID
     FROM TBL_EXPENSE
       <where>
         ID = #{id}
@@ -23,7 +26,7 @@
 
   <!-- 条件検索 -->
   <select id="findByCondition" parameterType="com.expenses.springboot.exp.dto.ExpenseSearchConditionDto" resultType="com.expenses.springboot.entity.TblExpenseEntity">
-    SELECT ID, AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, RESISTER_DATE
+    SELECT ID, AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, REGISTER_DATE, USER_ID
     FROM TBL_EXPENSE
       <where>
       <!-- 日付範囲 -->
@@ -46,14 +49,18 @@
       <if test="remarks != null and remarks != ''">
         AND REMARKS LIKE CONCAT('%', #{remarks}, '%')
       </if>
+      <!-- userIdが空文字でなければ条件に追加 -->
+      <if test="userId != null and userId != ''">
+        AND USER_ID = #{userId}
+      </if>
     </where>
     ORDER BY PAYMENT_DATE DESC, ID DESC
   </select>
 
   <!-- 登録 -->
   <insert id="insert" parameterType="com.expenses.springboot.entity.TblExpenseEntity" useGeneratedKeys="true" keyProperty="id">
-    INSERT INTO TBL_EXPENSE (AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, RESISTER_DATE)
-    VALUES (#{amount}, #{storeId}, #{categoryId}, #{payerId}, #{paymentDate}, #{splitFlg}, #{remarks}, #{resisterDate})
+    INSERT INTO TBL_EXPENSE (AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, REGISTER_DATE, USER_ID)
+    VALUES (#{amount}, #{storeId}, #{categoryId}, #{payerId}, #{paymentDate}, #{splitFlg}, #{remarks}, #{registerDate}, #{userId})
   </insert>
 
   <!-- 主キー削除 -->

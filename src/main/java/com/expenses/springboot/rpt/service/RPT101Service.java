@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.expenses.springboot.common.ExConstant;
@@ -39,6 +40,9 @@ public class RPT101Service {
 		// 出力項目
 		RPT101ServiceTotallingOut output = new RPT101ServiceTotallingOut();
 
+		// ユーザ名取得
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
 		// 出費テーブルエンティティリスト
 		List<TblExpenseEntity> tblExpenseList = new ArrayList<>();
 
@@ -49,7 +53,7 @@ public class RPT101Service {
 		RPT101TotallingResultEntity c101TotallingResultEntity = new RPT101TotallingResultEntity();
 
 		// 支払者リスト取得
-		Iterable<TblPayerEntity> payerList = tblPayerMapper.findAll();
+		Iterable<TblPayerEntity> payerList = tblPayerMapper.findByUserId(userId);
 		Map<Integer, String> payerMap = new LinkedHashMap<>();
 
 		// 支払者MAP作成

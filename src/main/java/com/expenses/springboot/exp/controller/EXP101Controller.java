@@ -88,7 +88,7 @@ public class EXP101Controller {
 			input.setRemarks(formDto.getTextRemarks());
 
 			// 登録処理
-			exp101Service.resister(input);
+			exp101Service.register(input);
 
 			// 初期表示処理
 			formDto = exp101Service.display();

@@ -9,8 +9,8 @@ import com.expenses.springboot.entity.TblCategoryEntity;
 @Mapper
 public interface TblCategoryMapper {
 
-	// 全検索
-	List<TblCategoryEntity> findAll();
+	// 検索(ユーザID)
+	List<TblCategoryEntity> findByUserId(String userId);
 
 //	// 主キー検索
 //	TblCategoryEntity findByCategoryId(int categoryId);

@@ -27,4 +27,7 @@ public class ExpenseSearchConditionDto {
 
 	// 備考
 	private String remarks;
+
+	// ユーザID
+	private String userId;
 }

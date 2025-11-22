@@ -18,7 +18,7 @@ function clearTextBox() {
  * 登録処理
  * 登録ボタン押下時、各種プルダウンの選択項目のキーを隠し項目に設定する
  */
-function resister() {
+function register() {
 
 	let objectPulStore = document.getElementById("pulStore");
 	cosole.log(objectPulStore.value);

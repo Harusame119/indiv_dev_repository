@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.expenses.springboot.common.ExConstant;
@@ -37,6 +38,9 @@ public class CreateMapService {
 		// 出力項目
 		CreateMapServiceOut output = new CreateMapServiceOut();
 
+		// ユーザ名取得
+		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
 		// 引数の配列の項目分繰り返す
 		for (String target : targetDB) {
 
@@ -44,7 +48,7 @@ public class CreateMapService {
 			if (ExConstant.TBL_STORE.equals(target)) {
 
 				// 店舗リスト取得
-				Iterable<TblStoreEntity> storeList = storeMapper.findAll();
+				Iterable<TblStoreEntity> storeList = storeMapper.findByUserId(userId);
 				Map<Integer, String> storeMap = new LinkedHashMap<>();
 
 				// 空白フラグ＝"1(あり)"の場合
@@ -64,7 +68,7 @@ public class CreateMapService {
 			} else if (ExConstant.TBL_CATEGORY.equals(target)) {
 
 				// 種別リスト取得
-				Iterable<TblCategoryEntity> categoryList = categoryMapper.findAll();
+				Iterable<TblCategoryEntity> categoryList = categoryMapper.findByUserId(userId);
 				Map<Integer, String> categoryMap = new LinkedHashMap<>();
 
 				// 空白フラグ＝"1(あり)"の場合
@@ -84,7 +88,7 @@ public class CreateMapService {
 			} else if (ExConstant.TBL_PAYER.equals(target)) {
 
 				// 支払者リスト取得
-				Iterable<TblPayerEntity> payerList = payerMapper.findAll();
+				Iterable<TblPayerEntity> payerList = payerMapper.findByUserId(userId);
 				Map<Integer, String> payerMap = new LinkedHashMap<>();
 
 				// 空白フラグ＝"1(あり)"の場合

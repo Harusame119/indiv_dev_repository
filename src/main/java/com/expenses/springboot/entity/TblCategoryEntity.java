@@ -14,4 +14,7 @@ public class TblCategoryEntity {
 
 	private String categoryName;
 
+	private String userId;
+
+	private int sortOrder;
 }

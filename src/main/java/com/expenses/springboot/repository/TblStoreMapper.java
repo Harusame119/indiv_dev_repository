@@ -9,8 +9,8 @@ import com.expenses.springboot.entity.TblStoreEntity;
 @Mapper
 public interface TblStoreMapper {
 
-	// 全検索
-	List<TblStoreEntity> findAll();
+	// 検索(ユーザID)
+	List<TblStoreEntity> findByUserId(String userId);
 
 //	// 主キー検索
 //	TblStoreEntity findByStoreId(int storeId);

@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,12 +75,15 @@ public class EXP101Service {
 	 * 出費テーブル登録メソッド
 	 */
 	@Transactional
-	public void resister(EXP101ServiceRegisterIn input) {
+	public void register(EXP101ServiceRegisterIn input) {
 
 		try {
 
 			// Input用出費テーブルエンティティ
 			TblExpenseEntity tblExpenseIn = new TblExpenseEntity();
+
+			// ユーザ名取得
+			String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
 			// 現在日付取得
 			java.sql.Date nowDate = new java.sql.Date(new java.util.Date().getTime());
@@ -101,9 +105,11 @@ public class EXP101Service {
 			// 分割フラグ
 			tblExpenseIn.setSplitFlg(input.getSplitFlg());
 			// 登録日
-			tblExpenseIn.setResisterDate(nowDate);
+			tblExpenseIn.setRegisterDate(nowDate);
 			// 備考
 			tblExpenseIn.setRemarks(input.getRemarks());
+			// ユーザID
+			tblExpenseIn.setUserId(userId);
 
 			// 登録処理実行
 			expenseMapper.insert(tblExpenseIn);

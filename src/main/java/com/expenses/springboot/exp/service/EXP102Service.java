@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.expenses.springboot.common.ExConstant;
@@ -105,6 +106,9 @@ public class EXP102Service {
 
 		try {
 
+			// ユーザ名取得
+			String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
 			// 開始日型変換
 			java.sql.Date startDate = java.sql.Date.valueOf(input.getStartDate());
 	
@@ -118,6 +122,7 @@ public class EXP102Service {
 			conDto.setCategoryId(input.getCategoryId());
 			conDto.setPayerId(input.getPayerId());
 			conDto.setRemarks(input.getRemarks());
+			conDto.setUserId(userId);
 
 			// 検索条件に従って検索
 			tblExpenseList = tblExpenseMapper.findByCondition(conDto);

@@ -7,9 +7,13 @@
 <mapper namespace="com.expenses.springboot.repository.TblStoreMapper">
 
   <!-- ユーザー名で検索するSQL -->
-  <select id="findAll" resultType="com.expenses.springboot.entity.TblStoreEntity">
-    SELECT STORE_ID, STORE_NAME
+  <select id="findByUserId" parameterType="java.lang.String" resultType="com.expenses.springboot.entity.TblStoreEntity">
+    SELECT STORE_ID, STORE_NAME, USER_ID, SORT_ORDER
     FROM TBL_STORE
+      <where>
+        USER_ID = #{userId}
+      </where>
+    ORDER BY SORT_ORDER
   </select>
 
 </mapper>
