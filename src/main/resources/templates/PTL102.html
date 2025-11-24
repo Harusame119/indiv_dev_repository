@@ -13,7 +13,7 @@
 			<div class="row mb-1 mt-1">
 				<div class="col-6 d-flex">
 					<h1 th:text="#{system.subtitle.expense}"></h1>
-					<img th:src="@{/images/R.png}">
+					<img th:src="@{/images/R.png}" class="img-fluid" style="max-height: 40px; width: auto;">
 				</div>
 				<div class="col-6 d-flex justify-content-end align-items-center">
 					<div class="me-3 mr-3">
@@ -34,13 +34,25 @@
 		<h3 th:text="#{system.submenu.title.expense}"></h3>
 		<table class="table">
 			<tr>
-				<td><a href="http://localhost:8080/EXP101_EV001">出費登録</a></td>
+				<td><a href="/EXP101_EV001">出費登録</a></td>
 			</tr>
 			<tr>
-				<td><a href="http://localhost:8080/EXP102_EV001">出費照会</a></td>
+				<td><a href="/EXP102_EV001">出費照会</a></td>
 			</tr>
 			<tr>
-				<td><a href="http://localhost:8080/RPT101_EV001">帳票出力</a></td>
+				<td><a href="/RPT101_EV001">帳票出力</a></td>
+			</tr>
+		</table>
+		<h3 th:text="#{system.submenu.title.mstmng}"></h3>
+		<table class="table">
+			<tr>
+				<td><a href="/EXP101_EV001">店舗マスタ</a></td>
+			</tr>
+			<tr>
+				<td><a href="/EXP102_EV001">種別マスタ</a></td>
+			</tr>
+			<tr>
+				<td><a href="/RPT101_EV001">支払者マスタ</a></td>
 			</tr>
 		</table>
 	</div>

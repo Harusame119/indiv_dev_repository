@@ -19,7 +19,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -27,7 +27,22 @@ public class SecurityConfig {
                 .successHandler(customAuthenticationSuccessHandler())
                 .permitAll()
             )
-            .logout(logout -> logout.permitAll());
+            .logout(logout -> logout
+                .permitAll()
+                .logoutSuccessUrl("/login?logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+            )
+            .sessionManagement(session -> session
+                // ログイン成功時に新しいセッションIDに変更し、古いセッションの属性（CSRFトークンなど）を引き継ぐ
+                // これにより、ログイン直後のCSRFトークン不一致エラーを防ぎます。
+                .sessionFixation().changeSessionId()
+            )
+            .headers(headers -> headers
+                .frameOptions(frameOptions -> frameOptions.sameOrigin()) // Clickjacking対策（iFrameからの埋め込み制限）
+                .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000)) // HSTS (HTTPS強制)
+            )
+            ;
 
         return http.build();
     }
