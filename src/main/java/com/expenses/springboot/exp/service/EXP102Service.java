@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.expenses.springboot.common.ExConstant;
 import com.expenses.springboot.common.dto.CreateMapServiceOut;
@@ -24,6 +25,7 @@ import com.expenses.springboot.repository.TblExpenseMapper;
  * 出費照会サービス
  */
 @Service
+@Transactional
 public class EXP102Service {
 
 	@Autowired

@@ -9,159 +9,178 @@
 <title>EXP103:出費詳細</title>
 </head>
 <body>
+	<!-- サイドメニュー -->
+	<div id="mySidebar" class="sidebar">
+	    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+	    <h4 class="text-white ml-4 mb-3">メニュー</h4>
+	    <a href="/ptl102_EV001"><i class="fas fa-home mr-2"></i> メインメニュー</a>
+	    <a href="/EXP101_EV001"><i class="fas fa-plus-circle mr-2"></i> 出費登録</a>
+	    <a href="/EXP102_EV001"><i class="fas fas fa-search mr-2"></i> 出費照会</a>
+	    <a href="#"><i class="fas fa-list-alt mr-2"></i> 出費一覧</a>
+	    <a href="#"><i class="fas fa-chart-bar mr-2"></i> 月次レポート</a>
+	    <div class="dropdown-divider border-secondary mx-3"></div>
+	    <a href="/logout"><i class="fas fa-sign-out-alt mr-2"></i> ログアウト</a>
+	</div>
+
+	<!-- サイドバー表示中のオーバーレイ -->
+	<div id="sidebar-overlay" class="overlay" onclick="closeNav()"></div>
+
 	<!-- ヘッダー -->
-	<nav class="sticky-top bd-subnavbar py-1 mb-4 shadow" style="background-color:rgb(248, 225, 194);">
-		<div class="container">
-			<div class="row mb-1 mt-1">
-				<div class="col-6 d-flex">
-					<h1 th:text="#{system.subtitle.expense}"></h1>
-					<img th:src="@{/images/R.png}" class="img-fluid" style="max-height: 40px; width: auto;">
-				</div>
-				<div class="col-6 d-flex justify-content-end align-items-center">
-					<div class="me-3 mr-3">
-						<h5 th:text="'ログイン者：' + ${session.userName}"></h5>
-					</div>
-					<div>
-						<form method="get" action="/ptl102_EV001">
-							<input type="submit" class="btn btn-outline-secondary" value="メインメニューへ戻る"/>
-						</form>
+	<div id="main">
+		<nav class="sticky-top bd-subnavbar py-1 mb-4 shadow" style="background-color:rgb(248, 225, 194);">
+			<div class="container">
+				<div class="row mb-1 mt-1">
+					<div class="col-6 d-flex align-items-center">
+					    <button class="btn mr-3" type="button" onclick="openNav()" style="background-color: #F5EFE7; border-color: #D7CCC8; color: #5D4037;">
+					        <span class="navbar-toggler-icon"><i class="fas fa-bars"></i></span>
+					    </button>
+					    <h1 th:text="#{system.subtitle.expense}"></h1>
+					    <img th:src="@{/images/R.png}" class="img-fluid" style="max-height: 40px; width: auto;">
+					</div>                    
+					<div class="col-6 d-flex justify-content-end align-items-center">
+						<div class="me-3 mr-3">
+							<h5 th:text="'ログイン者：' + ${session.userName}"></h5>
+						</div>
+						<div>
+							<form method="get" action="/ptl102_EV001">
+								<input type="submit" class="btn btn-outline-secondary" value="メインメニューへ戻る"/>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</nav>
+		</nav>
 
-	<!-- タイトル -->
-	<div class="container">
-		<div class="row">
-			<h3 th:text="#{EXP103.title}"></h3>
+		<!-- タイトル -->
+		<div class="container">
+			<div class="row">
+				<h3 th:text="#{EXP103.title}"></h3>
+			</div>
+		</div>
+
+		<!-- エラーメッセージ -->
+		<th:block th:if="${formDto.hdnMsg != null}">
+			<div class="container">
+				<div class="alert alert-success" role="alert">
+				  <p class="m-auto" th:text="${formDto.hdnMsg}"></p>
+				</div>
+			</div>
+		</th:block>
+
+		<!-- コンテンツエリア -->
+		<div class="container shadow-sm pt-4 pb-4 pr-3 pl-3 mb-5 bg-body rounded border border-3" style="background-color: #f5f5f5;">
+			<form id="form1" method="post" th:object="${formDto}">
+				<!-- CSRF hidden フィールド -->
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+				<div class="row">
+					<div class="form-group col">
+						<label for="textAmount">金額<b class="required"> ＊</b></label>
+						<input type="text" id="textAmount" name="textAmount" th:value="*{textAmount}" class="form-control" maxlength="7" required />
+						<div class="invalid-feedback">金額は必須項目です</div>
+					</div>
+					<div class="form-group col">
+						<label for="pulStore">店舗</label>
+						<select th:field="*{storeId}" class="dropdown form-control">
+							<option th:each="store : ${formDto.pulStore}" th:value="${store.key}" th:text="${store.value}"></option>
+						</select>
+					</div>
+					<div class="form-group col">
+						<label for="pulCategory">種別</label>
+						<select th:field="*{categoryId}" class="dropdown form-control">
+							<option th:each="category : ${formDto.pulCategory}" th:value="${category.key}" th:text="${category.value}"></option>
+						</select>
+					</div>
+				</div>
+				<div class="border mb-4"></div>
+				<div class="row">
+					<div class="form-group col">
+						<label for="pulPayer">支払者</label>
+						<select th:field="*{payerId}" class="dropdown form-control">
+							<option th:each="payer : ${formDto.pulPayer}" th:value="${payer.key}" th:text="${payer.value}"></option>
+						</select>
+					</div>
+					<div class="form-group col">
+						<label for="textPaymentDate">支払日<b class="required"> ＊</b></label>
+						<input type="date" name="textPaymentDate" th:value="*{textPaymentDate}" min="2024-08-01" max="2100-12-31" class="form-control"/>
+					</div>
+					<div class="form-group col">
+						<div class="row pl-3">
+							<label for="splitFlg">分割</label>
+						</div>
+						<div class="row pl-3">
+							<input type="radio" name="splitFlg" th:value="0" th:field="*{radioSplitFlg}" th:checked="*{radioSplitFlg == '0'}" />有
+							<input type="radio" name="splitFlg" th:value="1" th:field="*{radioSplitFlg}" th:checked="*{radioSplitFlg == '1'}" class="ml-3"/>無
+						</div>
+					</div>
+				</div>
+				<div class="border mb-4"></div>
+				<div class="row">
+					<div class="form-group col">
+						<label for="textRemarks">備考</label>
+						<input type="text" id="textRemarks" name="textRemarks" th:value="*{textRemarks}" class="form-control" maxlength="100">
+					</div>
+				</div>
+				<div class="border mb-3"></div>
+
+				<!-- 隠し項目-->
+				<input type="hidden" th:field="*{hiddenId}"/>
+
+				<!-- ボタンエリア -->
+				<div class="row d-flex justify-content-between">
+					<div class="ml-3">
+						<button type="button" onclick="submitForm('/EXP103_EV002')" class="btn btn-outline-primary shadow btn-lg">照会画面へ戻る</button>
+					</div>
+					<div class="row mr-3">
+						<div class="mr-2">
+							<button type="button" class="btn btn-outline-danger shadow btn-lg" data-toggle="modal" data-target="#deleteModal">削除</button>
+						</div>
+						<div>
+							<button type="button" class="btn btn-outline-success shadow btn-lg" data-toggle="modal" data-target="#updateModal">更新</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- モーダルエリア -->
+				<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+				  <div class="modal-dialog" role="document">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="deleteModalLabel">削除確認</h5>
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				          <span aria-hidden="true">&times;</span>
+				        </button>
+				      </div>
+				      <div class="modal-body">削除しますか？</div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">キャンセル</button>
+				        <button type="button" onclick="submitForm('/EXP103_EV003')" class="btn btn-outline-danger">削除</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+				<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+				  <div class="modal-dialog" role="document">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="updateModalLabel">更新確認</h5>
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				          <span aria-hidden="true">&times;</span>
+				        </button>
+				      </div>
+				      <div class="modal-body">更新しますか？</div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">キャンセル</button>
+				        <button type="button" onclick="submitForm('/EXP103_EV004')" class="btn btn-outline-success">更新</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+			</form>
 		</div>
 	</div>
-
-	<!-- エラーメッセージ -->
-	<th:block th:if="${formDto.hdnMsg != null}">
-		<div class="container">
-			<div class="alert alert-success" role="alert">
-			  <p class="m-auto" th:text="${formDto.hdnMsg}"></p>
-			</div>
-		</div>
-	</th:block>
-
-	<!-- コンテンツエリア -->
-	<div class="container shadow-sm pt-4 pb-4 pr-3 pl-3 mb-5 bg-body rounded border border-3" style="background-color: #f5f5f5;">
-		<form id="form1" method="post" th:object="${formDto}">
-			<!-- CSRF hidden フィールド -->
-			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-			<div class="row">
-				<div class="form-group col">
-					<label for="textAmount">金額<b class="required"> ＊</b></label>
-					<input type="text" id="textAmount" name="textAmount" th:value="*{textAmount}" class="form-control" maxlength="7" required />
-					<div class="invalid-feedback">金額は必須項目です</div>
-				</div>
-				<div class="form-group col">
-					<label for="pulStore">店舗</label>
-					<select name="storeId" class="dropdown form-control">
-						<option th:each="store : ${formDto.pulStore}" th:value="${store.key}" th:text="${store.value}" th:selected="${store.key == selectedStoreKey}"></option>
-					</select>
-				</div>
-				<div class="form-group col">
-					<label for="pulCategory">種別</label>
-					<select name="categoryId" class="dropdown form-control">
-						<option th:each="category : ${formDto.pulCategory}" th:value="${category.key}" th:text="${category.value}" th:selected="${category.key == selectedCategoryKey}"></option>
-					</select>
-				</div>
-			</div>
-			<div class="border mb-4"></div>
-			<div class="row">
-				<div class="form-group col">
-					<label for="pulPayer">支払者</label>
-					<select name="payerId" class="dropdown form-control">
-						<option th:each="payer : ${formDto.pulPayer}" th:value="${payer.key}" th:text="${payer.value}" th:selected="${payer.key == selectedPayerKey}"></option>
-					</select>
-				</div>
-				<div class="form-group col">
-					<label for="textPaymentDate">支払日<b class="required"> ＊</b></label>
-					<input type="date" name="textPaymentDate" th:value="*{textPaymentDate}" min="2024-08-01" max="2100-12-31" class="form-control"/>
-				</div>
-				<div class="form-group col">
-					<div class="row pl-3">
-						<label for="splitFlg">分割</label>
-					</div>
-					<div class="row pl-3">
-						<input type="radio" name="splitFlg" th:value="0" th:field="*{radioSplitFlg}" th:checked="*{radioSplitFlg == '0'}" />有
-						<input type="radio" name="splitFlg" th:value="1" th:field="*{radioSplitFlg}" th:checked="*{radioSplitFlg == '1'}" class="ml-3"/>無
-					</div>
-				</div>
-			</div>
-			<div class="border mb-4"></div>
-			<div class="row">
-				<div class="form-group col">
-					<label for="textRemarks">備考</label>
-					<input type="text" id="textRemarks" name="textRemarks" th:value="*{textRemarks}" class="form-control" maxlength="100">
-				</div>
-			</div>
-			<div class="border mb-3"></div>
-
-			<!-- 隠し項目-->
-			<input type="hidden" th:field="*{hiddenId}"/>
-			<!-- ↓hiddenだとエンティティそのままでは入らなそう -->
-			<input type="hidden" name="formDtoBefUpd" id="formDtoBefUpd" value="${formDtoBefUpd}"/>
-
-			<!-- ボタンエリア -->
-			<div class="row d-flex justify-content-between">
-				<div class="ml-3">
-					<button type="button" onclick="submitForm('/EXP103_EV002')" class="btn btn-outline-primary shadow btn-lg">照会画面へ戻る</button>
-				</div>
-				<div class="row mr-3">
-					<div class="mr-2">
-						<button type="button" class="btn btn-outline-danger shadow btn-lg" data-toggle="modal" data-target="#deleteModal">削除</button>
-					</div>
-					<div>
-						<button type="button" class="btn btn-outline-success shadow btn-lg" data-toggle="modal" data-target="#updateModal">更新</button>
-					</div>
-				</div>
-			</div>
-
-			<!-- モーダルエリア -->
-			<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-			  <div class="modal-dialog" role="document">
-			    <div class="modal-content">
-			      <div class="modal-header">
-			        <h5 class="modal-title" id="deleteModalLabel">削除確認</h5>
-			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-			          <span aria-hidden="true">&times;</span>
-			        </button>
-			      </div>
-			      <div class="modal-body">削除しますか？</div>
-			      <div class="modal-footer">
-			        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">キャンセル</button>
-			        <button type="button" onclick="submitForm('/EXP103_EV003')" class="btn btn-outline-danger">削除</button>
-			      </div>
-			    </div>
-			  </div>
-			</div>
-			<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
-			  <div class="modal-dialog" role="document">
-			    <div class="modal-content">
-			      <div class="modal-header">
-			        <h5 class="modal-title" id="updateModalLabel">更新確認</h5>
-			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-			          <span aria-hidden="true">&times;</span>
-			        </button>
-			      </div>
-			      <div class="modal-body">更新しますか？</div>
-			      <div class="modal-footer">
-			        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">キャンセル</button>
-			        <button type="button" onclick="submitForm('/EXP103_EV004')" class="btn btn-outline-success">更新</button>
-			      </div>
-			    </div>
-			  </div>
-			</div>
-		</form>
-	</div>
-
+	<script src="/js/expenses_common.js"></script>
 	<script src="/js/EXP103.js"></script>
-	<!-- BootstrapのJavaScript（Popper.jsが含まれる） -->
+	<!-- BootstrapのJavaScript -->
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script></body>

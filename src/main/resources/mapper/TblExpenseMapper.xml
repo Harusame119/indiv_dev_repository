@@ -29,31 +29,31 @@
     SELECT ID, AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, REGISTER_DATE, USER_ID
     FROM TBL_EXPENSE
       <where>
-      <!-- 日付範囲 -->
-      <if test="startDate != null and endDate != null">
-        PAYMENT_DATE BETWEEN #{startDate} AND #{endDate}
-      </if>
-      <!-- storeIdが0以外なら条件に追加 -->
-      <if test="storeId != null and storeId != 0">
-        AND STORE_ID = #{storeId}
-      </if>
-      <!-- categoryIdが0以外なら条件に追加 -->
-      <if test="categoryId != null and categoryId != 0">
-        AND CATEGORY_ID = #{categoryId}
-      </if>
-      <!-- payerIdが0以外なら条件に追加 -->
-      <if test="payerId != null and payerId != 0">
-        AND PAYER_ID = #{payerId}
-      </if>
-      <!-- remarksが空文字でなければ部分一致検索 -->
-      <if test="remarks != null and remarks != ''">
-        AND REMARKS LIKE CONCAT('%', #{remarks}, '%')
-      </if>
-      <!-- userIdが空文字でなければ条件に追加 -->
-      <if test="userId != null and userId != ''">
-        AND USER_ID = #{userId}
-      </if>
-    </where>
+        <!-- 日付範囲 -->
+        <if test="startDate != null and endDate != null">
+          PAYMENT_DATE BETWEEN #{startDate} AND #{endDate}
+        </if>
+        <!-- storeIdが0以外なら条件に追加 -->
+        <if test="storeId != null and storeId != 0">
+          AND STORE_ID = #{storeId}
+        </if>
+        <!-- categoryIdが0以外なら条件に追加 -->
+        <if test="categoryId != null and categoryId != 0">
+          AND CATEGORY_ID = #{categoryId}
+        </if>
+        <!-- payerIdが0以外なら条件に追加 -->
+        <if test="payerId != null and payerId != 0">
+          AND PAYER_ID = #{payerId}
+        </if>
+        <!-- remarksが空文字でなければ部分一致検索 -->
+        <if test="remarks != null and remarks != ''">
+          AND REMARKS LIKE CONCAT('%', #{remarks}, '%')
+        </if>
+        <!-- userIdが空文字でなければ条件に追加 -->
+        <if test="userId != null and userId != ''">
+          AND USER_ID = #{userId}
+        </if>
+      </where>
     ORDER BY PAYMENT_DATE DESC, ID DESC
   </select>
 
@@ -70,5 +70,16 @@
         ID = #{id}
       </where>
   </delete>
+
+  <!-- 更新 -->
+  <update id="update" parameterType="com.expenses.springboot.entity.TblExpenseEntity">
+    UPDATE TBL_EXPENSE
+    SET
+    AMOUNT = #{amount}, STORE_ID = #{storeId}, CATEGORY_ID = #{categoryId}, PAYER_ID = #{payerId},
+    PAYMENT_DATE = #{paymentDate}, SPLIT_FLG = #{splitFlg}, REMARKS = #{remarks}, REGISTER_DATE = #{registerDate}
+      <where>
+        ID = #{id}
+      </where>
+  </update>
 
 </mapper>

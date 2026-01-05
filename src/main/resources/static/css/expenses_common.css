@@ -7,3 +7,62 @@ label {
 .required {
 	color: red;
 }
+
+/* カスタムサイドバーのスタイル */
+.sidebar {
+    height: 100%;
+    width: 0; /* デフォルトで非表示 */
+    position: fixed;
+    z-index: 1050;
+    top: 0;
+    left: 0;
+    background-color: #5D4037; 
+    overflow-x: hidden;
+    transition: 0.3s;
+    padding-top: 60px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+}
+
+.sidebar a {
+    padding: 15px 15px 15px 32px;
+    text-decoration: none;
+    font-size: 20px;
+    color: #FBEBDD; 
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: #795548;
+    color: #FFECB3;
+}
+
+.sidebar .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+    color: #f8f9fa;
+}
+
+/* サイドバーが開いているときにメインコンテンツを覆うオーバーレイのスタイル */
+.overlay {
+    /* 画面全体に固定 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 半透明の黒で薄暗くする */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* サイドバー (z-index: 1050) の下に配置 */
+    z-index: 1040; 
+    /* デフォルトで非表示 */
+    display: none; 
+}
+
+/* メインコンテンツの調整 (サイドバーが開いたときに移動させる場合は使用) */
+#main {
+    transition: margin-left .3s;
+}

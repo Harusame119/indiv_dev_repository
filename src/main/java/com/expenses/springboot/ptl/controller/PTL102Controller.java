@@ -8,6 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.expenses.springboot.common.ExConstant;
+
 /**
  * サブメニュー(家計簿)画面コントローラー
  */
@@ -18,7 +20,7 @@ public class PTL102Controller {
 	public String diplay(Model model) {
 
 		// 遷移先画面名
-		String dispNm = "PTL102";
+		String dispNm = ExConstant.DISPNM_PTL102;
 
 		// 画面遷移
 		return dispNm;

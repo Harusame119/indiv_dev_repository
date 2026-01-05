@@ -10,5 +10,4 @@ public class EXP103ServiceDeleteIn {
 
 	// 出費ID
 	private Integer expenseId;
-
 }

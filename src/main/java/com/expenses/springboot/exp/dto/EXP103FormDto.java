@@ -19,12 +19,15 @@ public class EXP103FormDto {
 
 	// 店舗プルダウンメニュー
 	private Map<Integer, String> pulStore;
+    private Integer storeId;
 
 	// 種別プルダウンメニュー
 	private Map<Integer, String> pulCategory;
+    private Integer categoryId;
 
 	// 支払者プルダウンメニュー
 	private Map<Integer, String> pulPayer;
+    private Integer payerId;
 
 	// 支払日テキストボックス
 	@NotNull

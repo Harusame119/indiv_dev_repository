@@ -38,271 +38,280 @@ import com.expenses.springboot.exp.service.EXP103Service;
 @Controller
 public class EXP103Controller {
 
-	@Autowired
-	EXP102Service exp102Service;
+    @Autowired
+    EXP102Service exp102Service;
 
-	@Autowired
-	EXP103Service exp103Service;
+    @Autowired
+    EXP103Service exp103Service;
 
-	/**
-	 * 初期表示メソッド
-	 */
-	@RequestMapping(value="/EXP103_EV001" ,method=RequestMethod.POST)
-	public String display(@RequestParam("id") Integer id,
-			Model model) {
+    /**
+     * 初期表示メソッド
+     */
+    @RequestMapping(value = "/EXP103_EV001", method = RequestMethod.POST)
+    public String display(@RequestParam("id") Integer id,
+            Model model) {
 
-		// 遷移先画面名
-		String dispNm = ExConstant.DISPNM_EXP103;
+        // 遷移先画面名
+        String dispNm = ExConstant.DISPNM_EXP103;
 
-		// 出費詳細サービス検索出力
-		EXP103ServiceFindOut exp103ServiceFindOut = new EXP103ServiceFindOut();
+        // 出費詳細サービス検索出力
+        EXP103ServiceFindOut exp103ServiceFindOut = new EXP103ServiceFindOut();
 
-		// 出費詳細サービス検索入力
-		EXP103ServiceFindIn exp103ServiceFindIn = new EXP103ServiceFindIn();
+        // 出費詳細サービス検索入力
+        EXP103ServiceFindIn exp103ServiceFindIn = new EXP103ServiceFindIn();
 
-		// 出費詳細サービス検索入力設定
-		exp103ServiceFindIn.setExpenseId(id);
+        // 出費詳細サービス検索入力設定
+        exp103ServiceFindIn.setExpenseId(id);
 
-		// 初期表示処理
-		exp103ServiceFindOut = exp103Service.display(exp103ServiceFindIn);
+        // 初期表示処理
+        exp103ServiceFindOut = exp103Service.display(exp103ServiceFindIn);
 
-		// 画面DTO
-		EXP103FormDto formDto = this.setFormDto(exp103ServiceFindOut);
+        // 画面DTO設定メソッド呼び出し
+        EXP103FormDto formDto = this.setFormDto(exp103ServiceFindOut.getTblExpenseEntity());
 
-		// プルダウンの初期選択項目を設定
-		model.addAttribute("selectedStoreKey", exp103ServiceFindOut.getTblExpenseEntity().getStoreId());
-		model.addAttribute("selectedCategoryKey", exp103ServiceFindOut.getTblExpenseEntity().getCategoryId());
-		model.addAttribute("selectedPayerKey", exp103ServiceFindOut.getTblExpenseEntity().getPayerId());
+        // プルダウン項目設定
+        formDto.setPulStore(exp103ServiceFindOut.getStoreMap());
+        formDto.setPulCategory(exp103ServiceFindOut.getCategoryMap());
+        formDto.setPulPayer(exp103ServiceFindOut.getPayerMap());
 
-		// メッセージのクリア
-		formDto.setHdnMsg(null);
+        // メッセージのクリア
+        formDto.setHdnMsg(null);
 
-		// 更新前情報の設定（更新時比較用）　→エンティティそのままだと持てなそう
-		model.addAttribute("formDtoBefUpd", formDto);
+        // formを設定
+        model.addAttribute("formDto", formDto);
 
-		// formを設定
-		model.addAttribute("formDto", formDto);
+        // 画面遷移
+        return dispNm;
 
-		// 画面遷移
-		return dispNm;
+    }
 
-	}
+    /**
+     * 出費照会（詳細画面へのリターン）メソッド
+     */
+    @RequestMapping(value = "/EXP103_EV002", method = RequestMethod.POST)
+    public String returnToE102(HttpSession session, Model model) throws Exception {
 
-	/**
-	 * 出費照会（詳細画面へのリターン）メソッド
-	 */
-	@RequestMapping(value="/EXP103_EV002" ,method=RequestMethod.POST)
-	public String returnToE102(HttpSession session, Model model) throws Exception {
+        // 遷移先画面名
+        String dispNm = ExConstant.DISPNM_EXP102;
 
-		// 遷移先画面名
-		String dispNm = ExConstant.DISPNM_EXP102;
+        // 画面DTO
+        EXP102FormDto formDto = (EXP102FormDto) session.getAttribute("conFormDto");
 
-		// 画面DTO
-		EXP102FormDto formDto = (EXP102FormDto) session.getAttribute("conFormDto");
+        if (formDto == null) {
+            throw new Exception("セッションの有効期限が切れました");
+        }
 
-		if (formDto == null) {
-			throw new Exception("セッションの有効期限が切れました");
-		}
+        // 出費照会サービス検索出力
+        EXP102ServiceFindOut exp102ServiceFindOut = new EXP102ServiceFindOut();
 
-		// 出費照会サービス検索出力
-		EXP102ServiceFindOut exp102ServiceFindOut = new EXP102ServiceFindOut();
+        // 出費照会サービス検索入力
+        EXP102ServiceFindIn exp102ServiceFindIn = new EXP102ServiceFindIn();
 
-		// 出費照会サービス検索入力
-		EXP102ServiceFindIn exp102ServiceFindIn = new EXP102ServiceFindIn();
+        // 出費照会サービス検索入力設定
+        // 店舗ID
+        exp102ServiceFindIn.setStoreId(formDto.getStoreId());
+        // 種別ID
+        exp102ServiceFindIn.setCategoryId(formDto.getCategoryId());
+        // 支払者ID
+        exp102ServiceFindIn.setPayerId(formDto.getPayerId());
+        // 開始日
+        exp102ServiceFindIn.setStartDate(formDto.getStartYMDSearchCondition());
+        // 終了日
+        exp102ServiceFindIn.setEndDate(formDto.getEndYMDSearchCondition());
+        // 備考
+        exp102ServiceFindIn.setRemarks(formDto.getRemarksSearchCondition());
 
-		// 出費照会サービス検索入力設定
-		// 店舗ID
-		exp102ServiceFindIn.setStoreId(formDto.getStoreId());
-		// 種別ID
-		exp102ServiceFindIn.setCategoryId(formDto.getCategoryId());
-		// 支払者ID
-		exp102ServiceFindIn.setPayerId(formDto.getPayerId());
-		// 開始日
-		exp102ServiceFindIn.setStartDate(formDto.getStartYMDSearchCondition());
-		// 終了日
-		exp102ServiceFindIn.setEndDate(formDto.getEndYMDSearchCondition());
-		// 備考
-		exp102ServiceFindIn.setRemarks(formDto.getRemarksSearchCondition());
+        // 検索処理メソッド呼び出し
+        exp102ServiceFindOut = exp102Service.find(exp102ServiceFindIn);
 
-		// 検索処理メソッド呼び出し
-		exp102ServiceFindOut = exp102Service.find(exp102ServiceFindIn);
+        // 検索結果の設定
+        formDto.setResultList(exp102ServiceFindOut.getResultList());
+        formDto.setSumAmount(exp102ServiceFindOut.getSum());
 
-		// 検索結果の設定
-		formDto.setResultList(exp102ServiceFindOut.getResultList());
-		formDto.setSumAmount(exp102ServiceFindOut.getSum());
+        // 各種プルダウンを設定
+        formDto.setPulStore(exp102ServiceFindOut.getStoreMap());
+        formDto.setPulCategory(exp102ServiceFindOut.getCategoryMap());
+        formDto.setPulPayer(exp102ServiceFindOut.getPayerMap());
+        formDto.setStoreId(formDto.getStoreId());
+        formDto.setCategoryId(formDto.getCategoryId());
+        formDto.setPayerId(formDto.getPayerId());
 
-		// 各種プルダウンを設定
-		formDto.setPulStore(exp102ServiceFindOut.getStoreMap());
-		formDto.setPulCategory(exp102ServiceFindOut.getCategoryMap());
-		formDto.setPulPayer(exp102ServiceFindOut.getPayerMap());
+        // メッセージのクリア
+        formDto.setHdnMsg(null);
 
-		// プルダウンの初期選択項目を設定
-		model.addAttribute("selectedStoreKey", (Integer) session.getAttribute("conStoreId"));
-		model.addAttribute("selectedCategoryKey", (Integer) session.getAttribute("conCategoryId"));
-		model.addAttribute("selectedPayerKey", (String) session.getAttribute("conRemarks"));
+        // formを設定
+        model.addAttribute("formDto", formDto);
 
-		// メッセージのクリア
-		formDto.setHdnMsg(null);
+        // 画面遷移
+        return dispNm;
 
-		// formを設定
-		model.addAttribute("formDto", formDto);
+    }
 
-		// 画面遷移
-		return dispNm;
+    /**
+     * 削除メソッド
+     */
+    @RequestMapping(value = "/EXP103_EV003", method = RequestMethod.POST)
+    public String delete(@Validated @ModelAttribute("formDto") EXP103FormDto formDto,
+            HttpSession session,
+            Model model) throws Exception {
 
-	}
+        // 遷移先画面名
+        String dispNm = ExConstant.DISPNM_EXP102;
 
-	/**
-	 * 削除メソッド
-	 */
-	@RequestMapping(value="/EXP103_EV003" ,method=RequestMethod.POST)
-	public String delete(@ModelAttribute("formDto")
-			@Validated EXP103FormDto formDto,
-			HttpSession session,
-			Model model) throws Exception {
+        // 出費詳細サービス削除出力
+        EXP103ServiceDeleteOut exp103ServiceDeleteOut = new EXP103ServiceDeleteOut();
 
-		// 遷移先画面名
-		String dispNm = ExConstant.DISPNM_EXP102;
+        // 出費詳細サービス削除入力
+        EXP103ServiceDeleteIn exp103ServiceDeleteIn = new EXP103ServiceDeleteIn();
 
-		// 出費詳細サービス削除出力
-		EXP103ServiceDeleteOut exp103ServiceDeleteOut = new EXP103ServiceDeleteOut();
+        // 出費詳細サービス削除入力設定
+        // 出費ID
+        exp103ServiceDeleteIn.setExpenseId(Integer.parseInt((formDto.getHiddenId())));
 
-		// 出費詳細サービス削除入力
-		EXP103ServiceDeleteIn exp103ServiceDeleteIn = new EXP103ServiceDeleteIn();
+        // 削除処理メソッド呼び出し
+        exp103ServiceDeleteOut = exp103Service.delete(exp103ServiceDeleteIn);
 
-		// 出費詳細サービス削除入力設定
-		// 出費ID
-		exp103ServiceDeleteIn.setExpenseId(Integer.parseInt((formDto.getHiddenId())));
+        // 画面DTO(検索条件)
+        EXP102FormDto conFormDto = (EXP102FormDto) session.getAttribute("conFormDto");
 
-		// 削除処理メソッド呼び出し
-		exp103ServiceDeleteOut = exp103Service.delete(exp103ServiceDeleteIn);
+        if (conFormDto == null) {
+            throw new Exception("セッションの有効期限が切れました");
+        }
 
-		// 画面DTO(検索条件)
-		EXP102FormDto conFormDto = (EXP102FormDto) session.getAttribute("conFormDto");
+        // 出費照会サービス検索出力
+        EXP102ServiceFindOut exp102ServiceFindOut = new EXP102ServiceFindOut();
 
-		if (conFormDto == null) {
-			throw new Exception("セッションの有効期限が切れました");
-		}
+        // 出費照会サービス検索入力
+        EXP102ServiceFindIn exp102ServiceFindIn = new EXP102ServiceFindIn();
 
-		// 出費照会サービス検索出力
-		EXP102ServiceFindOut exp102ServiceFindOut = new EXP102ServiceFindOut();
+        // 出費照会サービス検索入力設定
+        // 店舗ID
+        exp102ServiceFindIn.setStoreId(conFormDto.getStoreId());
+        // 種別ID
+        exp102ServiceFindIn.setCategoryId(conFormDto.getCategoryId());
+        // 支払者ID
+        exp102ServiceFindIn.setPayerId(conFormDto.getPayerId());
+        // 開始日
+        exp102ServiceFindIn.setStartDate(conFormDto.getStartYMDSearchCondition());
+        // 終了日
+        exp102ServiceFindIn.setEndDate(conFormDto.getEndYMDSearchCondition());
+        // 備考
+        exp102ServiceFindIn.setRemarks(conFormDto.getRemarksSearchCondition());
 
-		// 出費照会サービス検索入力
-		EXP102ServiceFindIn exp102ServiceFindIn = new EXP102ServiceFindIn();
+        // 検索処理メソッド呼び出し
+        exp102ServiceFindOut = exp102Service.find(exp102ServiceFindIn);
 
-		// 出費照会サービス検索入力設定
-		// 店舗ID
-		exp102ServiceFindIn.setStoreId(conFormDto.getStoreId());
-		// 種別ID
-		exp102ServiceFindIn.setCategoryId(conFormDto.getCategoryId());
-		// 支払者ID
-		exp102ServiceFindIn.setPayerId(conFormDto.getPayerId());
-		// 開始日
-		exp102ServiceFindIn.setStartDate(conFormDto.getStartYMDSearchCondition());
-		// 終了日
-		exp102ServiceFindIn.setEndDate(conFormDto.getEndYMDSearchCondition());
-		// 備考
-		exp102ServiceFindIn.setRemarks(conFormDto.getRemarksSearchCondition());
+        // 検索結果の設定
+        conFormDto.setResultList(exp102ServiceFindOut.getResultList());
+        conFormDto.setSumAmount(exp102ServiceFindOut.getSum());
 
-		// 検索処理メソッド呼び出し
-		exp102ServiceFindOut = exp102Service.find(exp102ServiceFindIn);
+        // 隠しメッセージの設定
+        conFormDto.setHdnMsg("削除しました");
 
-		// 検索結果の設定
-		conFormDto.setResultList(exp102ServiceFindOut.getResultList());
-		conFormDto.setSumAmount(exp102ServiceFindOut.getSum());
+        // 各種プルダウンを設定
+        conFormDto.setPulStore(exp102ServiceFindOut.getStoreMap());
+        conFormDto.setPulCategory(exp102ServiceFindOut.getCategoryMap());
+        conFormDto.setPulPayer(exp102ServiceFindOut.getPayerMap());
 
-		// 隠しメッセージの設定
-		conFormDto.setHdnMsg("削除しました");
+        // formを設定
+        model.addAttribute("formDto", conFormDto);
 
-		// 各種プルダウンを設定
-		conFormDto.setPulStore(exp102ServiceFindOut.getStoreMap());
-		conFormDto.setPulCategory(exp102ServiceFindOut.getCategoryMap());
-		conFormDto.setPulPayer(exp102ServiceFindOut.getPayerMap());
+        // 画面遷移
+        return dispNm;
+    }
 
-		// formを設定
-		model.addAttribute("formDto", conFormDto);
+    /**
+     * 出費更新メソッド
+     */
+    @RequestMapping(value = "/EXP103_EV004", method = RequestMethod.POST)
+    public String update(@Validated @ModelAttribute("formDto") EXP103FormDto formDto,
+            BindingResult result,
+            HttpSession session,
+            Model model) {
 
-		// 画面遷移
-		return dispNm;
-	}
+        // 遷移先画面名
+        String dispNm = ExConstant.DISPNM_EXP103;
 
-	/**
-	 * 出費更新メソッド
-	 */
-	@RequestMapping(value="/EXP103_EV004" ,method=RequestMethod.POST)
-	public String update(@ModelAttribute("formDto")
-			@RequestParam("formDtoBefUpd") EXP103FormDto befUpd,
-			@RequestParam("storeId") String storeKey,
-			@RequestParam("categoryId") String categoryKey,
-			@RequestParam("payerId") String payerKey,
-			@RequestParam("selectedStoreKey") String storeKeyBef,
-			@RequestParam("selectedCategoryKey") String storeCategoryBef,
-			@RequestParam("selectedPayerKey") String storePayerBef,
-			@Validated EXP103FormDto formDto,
-			BindingResult result,
-			Model model) {
+        // 出費詳細サービス更新出力
+        EXP103ServiceUpdateOut exp103ServiceUpdateOut = new EXP103ServiceUpdateOut();
 
-		// 遷移先画面名
-		String dispNm = ExConstant.DISPNM_EXP103;
+        // 出費詳細サービス更新入力
+        EXP103ServiceUpdateIn exp103ServiceUpdateIn = new EXP103ServiceUpdateIn();
 
-		// 出費詳細サービス更新出力
-		EXP103ServiceUpdateOut exp103ServiceUpdateOut = new EXP103ServiceUpdateOut();
+        if (!result.hasErrors()) {
 
-		// 出費詳細サービス更新入力
-		EXP103ServiceUpdateIn exp103ServiceUpdateIn = new EXP103ServiceUpdateIn();
+            // 出費詳細サービス更新入力設定
+            // 出費ID
+            exp103ServiceUpdateIn.setExpenseId(Integer.parseInt(formDto.getHiddenId()));
+            // 金額
+            exp103ServiceUpdateIn.setAmount(Integer.parseInt(formDto.getTextAmount()));
+            // 店舗ID
+            exp103ServiceUpdateIn.setStoreId(formDto.getStoreId());
+            // 種別ID
+            exp103ServiceUpdateIn.setCategoryId(formDto.getCategoryId());
+            // 支払者ID
+            exp103ServiceUpdateIn.setPayerId(formDto.getPayerId());
+            // 支払日
+            exp103ServiceUpdateIn.setPaymentDate(formDto.getTextPaymentDate());
+            // 分割有無フラグ
+            exp103ServiceUpdateIn.setSplitFlg(formDto.getRadioSplitFlg());
+            // 備考
+            exp103ServiceUpdateIn.setRemarks(formDto.getTextRemarks());
 
-		if (checkChange()) {
-			
-		} else {
-			
-		}
+            // 更新処理メソッド呼び出し
+            exp103ServiceUpdateOut = exp103Service.update(exp103ServiceUpdateIn);
 
-		// プルダウンの初期選択項目を設定
-		model.addAttribute("selectedStoreKey", storeKey);
-		model.addAttribute("selectedCategoryKey", categoryKey);
-		model.addAttribute("selectedPayerKey", payerKey);
+            // 画面DTO設定メソッド呼び出し
+            formDto = this.setFormDto(exp103ServiceUpdateOut.getTblExpenseEntity());
 
-		// formを設定
-		model.addAttribute("formDto", formDto);
+            // プルダウン項目設定
+            formDto.setPulStore(exp103ServiceUpdateOut.getStoreMap());
+            formDto.setPulCategory(exp103ServiceUpdateOut.getCategoryMap());
+            formDto.setPulPayer(exp103ServiceUpdateOut.getPayerMap());
 
-		return dispNm;
-	}
+            // 隠しメッセージの設定
+            formDto.setHdnMsg("更新しました");
 
-	/**
-	 * 画面DTO設定メソッド
-	 */
-	private EXP103FormDto setFormDto(EXP103ServiceFindOut input) {
+        }
 
-		// 画面DTO
-		EXP103FormDto output = new EXP103FormDto();
+        // formを設定
+        model.addAttribute("formDto", formDto);
 
-		// 出費テーブルエンティティ
-		TblExpenseEntity entity = input.getTblExpenseEntity();
+        return dispNm;
+    }
 
-		// 値の設定
-		output.setTextAmount(String.valueOf(entity.getAmount()));
-		output.setTextPaymentDate(new SimpleDateFormat(
-				ExConstant.DATE_FORMAT_SPLIT_HYPHEN).format(entity.getPaymentDate()));
-		output.setRadioSplitFlg(entity.getSplitFlg());
-		output.setTextRemarks(entity.getRemarks());
-		output.setHiddenId(String.valueOf(entity.getId()));
-		output.setPulStore(input.getStoreMap());
-		output.setPulCategory(input.getCategoryMap());
-		output.setPulPayer(input.getPayerMap());
+    /**
+     * 画面DTO設定メソッド
+     */
+    private EXP103FormDto setFormDto(TblExpenseEntity entity) {
 
-		return output;
-	}
+        // 画面DTO
+        EXP103FormDto output = new EXP103FormDto();
 
-	/**
-	 * 変更有無判定メソッド
-	 * true  :変更有り
-	 * false :変更無し
-	 */
-	private boolean checkChange() {
+        // 値の設定
+        output.setTextAmount(String.valueOf(entity.getAmount()));
+        output.setTextPaymentDate(new SimpleDateFormat(
+                ExConstant.DATE_FORMAT_SPLIT_HYPHEN).format(entity.getPaymentDate()));
+        output.setRadioSplitFlg(entity.getSplitFlg());
+        output.setTextRemarks(entity.getRemarks());
+        output.setHiddenId(String.valueOf(entity.getId()));
+        output.setStoreId(entity.getStoreId());
+        output.setCategoryId(entity.getCategoryId());
+        output.setPayerId(entity.getPayerId());
 
-		boolean changeFlg = false;
+        return output;
+    }
 
-		return changeFlg;
-	}
+    /**
+     * 変更有無判定メソッド
+     * true  :変更有り
+     * false :変更無し
+     */
+    private boolean checkChange() {
+
+        boolean changeFlg = false;
+
+        return changeFlg;
+    }
 
 }

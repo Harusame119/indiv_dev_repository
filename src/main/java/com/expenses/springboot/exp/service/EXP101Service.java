@@ -20,10 +20,11 @@ import com.expenses.springboot.repository.TblExpenseMapper;
  * 出費登録サービス
  */
 @Service
+@Transactional
 public class EXP101Service {
 
     @Autowired
-    private TblExpenseMapper expenseMapper;
+    private TblExpenseMapper tblExpenseMapper;
 
 	@Autowired
 	CreateMapService createMapService;
@@ -33,8 +34,8 @@ public class EXP101Service {
 	 */
 	public EXP101FormDto display() {
 
+	    // 画面DTO
 		EXP101FormDto exp101FormDto = new EXP101FormDto();
-
 		// マップ作成サービス出力
 		CreateMapServiceOut mapOut = new CreateMapServiceOut();
 
@@ -74,7 +75,6 @@ public class EXP101Service {
 	/**
 	 * 出費テーブル登録メソッド
 	 */
-	@Transactional
 	public void register(EXP101ServiceRegisterIn input) {
 
 		try {
@@ -112,7 +112,7 @@ public class EXP101Service {
 			tblExpenseIn.setUserId(userId);
 
 			// 登録処理実行
-			expenseMapper.insert(tblExpenseIn);
+			tblExpenseMapper.insert(tblExpenseIn);
 
 		} catch (Exception e) {
 			e.printStackTrace();

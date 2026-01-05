@@ -12,6 +12,6 @@ public interface TblStoreMapper {
 	// 検索(ユーザID)
 	List<TblStoreEntity> findByUserId(String userId);
 
-//	// 主キー検索
-//	TblStoreEntity findByStoreId(int storeId);
+	// 登録
+	void insert(TblStoreEntity entity);
 }

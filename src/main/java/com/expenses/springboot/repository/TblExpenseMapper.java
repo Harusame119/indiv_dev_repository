@@ -25,4 +25,6 @@ public interface TblExpenseMapper {
 	// 主キー削除
 	void deleteById(int id);
 
+	// 更新
+	void update(TblExpenseEntity entity);
 }

@@ -16,4 +16,8 @@
     ORDER BY SORT_ORDER
   </select>
 
+  <insert id="insert" parameterType="com.expenses.springboot.entity.TblExpenseEntity" useGeneratedKeys="true" keyProperty="storeId">
+    INSERT INTO TBL_STORE (STORE_NAME, USER_ID, SORT_ORDER)
+    VALUES (#{storeName}, #{userId}, #{sortOrder})
+  </insert>
 </mapper>
