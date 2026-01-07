@@ -19,6 +19,15 @@
 		</div>
 	</nav>
 
+    <!-- エラーメッセージ -->
+    <th:block th:if="${errMsg}">
+        <div class="container">
+            <div class="alert alert-danger" role="alert">
+                <p class="m-auto" th:text="${errMsg}"></p>
+            </div>
+        </div>
+    </th:block>
+
 	<!-- コンテンツエリア -->
 	<div class="container">
 		<h2>ログイン</h2>

@@ -22,8 +22,8 @@
         <a href="/logout"><i class="fas fa-sign-out-alt mr-2"></i> ログアウト</a>
     </div>
 
-	<!-- サイドバー表示中のオーバーレイ -->
-	<div id="sidebar-overlay" class="overlay" onclick="closeNav()"></div>
+    <!-- サイドバー表示中のオーバーレイ -->
+    <div id="sidebar-overlay" class="overlay" onclick="closeNav()"></div>
 
     <!-- ヘッダー -->
     <div id="main">
@@ -58,11 +58,19 @@
             </div>
         </div>
 
-        <!-- エラーメッセージ -->
+        <!-- 隠しメッセージ -->
         <th:block th:if="${formDto.hdnMsg != null}">
             <div class="container">
                 <div class="alert alert-success" role="alert">
                   <p class="m-auto" th:text="${formDto.hdnMsg}"></p>
+                </div>
+            </div>
+        </th:block>
+        <!-- エラーメッセージ -->
+        <th:block th:if="${errMsg}">
+            <div class="container">
+                <div class="alert alert-danger" role="alert">
+                    <p class="m-auto" th:text="${errMsg}"></p>
                 </div>
             </div>
         </th:block>

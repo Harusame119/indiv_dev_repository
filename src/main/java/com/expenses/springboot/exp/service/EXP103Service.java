@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.expenses.springboot.common.CustomRuntimeException;
 import com.expenses.springboot.common.ExConstant;
 import com.expenses.springboot.common.dto.CreateMapServiceOut;
 import com.expenses.springboot.common.service.CreateMapService;
@@ -34,35 +35,40 @@ public class EXP103Service {
      */
     public EXP103ServiceFindOut display(EXP103ServiceFindIn input) {
 
-        // 出力項目
-        EXP103ServiceFindOut output = new EXP103ServiceFindOut();
-
-        // 出費テーブルエンティティ出力
-        TblExpenseEntity tblExpenseOut = new TblExpenseEntity();
-
-        // マップ作成サービス出力
-        CreateMapServiceOut mapOut = new CreateMapServiceOut();
-
-        /* 
-         * マップ作成メソッドの呼び出し
-         * 空白フラグ  ：0（空白なし）
-         * 対象テーブル：店舗テーブル、種別テーブル、支払者テーブル
-         */
-        mapOut = createMapService.createMapFromDB(0,
-                ExConstant.TBL_STORE,
-                ExConstant.TBL_CATEGORY,
-                ExConstant.TBL_PAYER);
+        // 初期化処理
+        EXP103ServiceFindOut output = new EXP103ServiceFindOut();   // 出力項目
+        TblExpenseEntity tblExpenseOut = new TblExpenseEntity();    // 出費テーブルエンティティ出力
+        CreateMapServiceOut mapOut = new CreateMapServiceOut();     // マップ作成サービス出力
 
         try {
 
             // 検索条件に従って検索
             tblExpenseOut = tblExpenseMapper.findById(input.getExpenseId());
 
+            // 取得結果がnullの場合
+            if (tblExpenseOut == null) {
+                throw new CustomRuntimeException("");
+            }
+
+            /* 
+             * マップ作成メソッドの呼び出し
+             * 空白フラグ  ：0（空白なし）
+             * 対象テーブル：店舗テーブル、種別テーブル、支払者テーブル
+             */
+            mapOut = createMapService.createMapFromDB(0,
+                    ExConstant.TBL_STORE,
+                    ExConstant.TBL_CATEGORY,
+                    ExConstant.TBL_PAYER);
+
             // 出力項目に設定
-            output.setStoreMap(mapOut.getStoreMap());
-            output.setCategoryMap(mapOut.getCategoryMap());
-            output.setPayerMap(mapOut.getPayerMap());
-            output.setTblExpenseEntity(tblExpenseOut);
+            output.setStoreMap(mapOut.getStoreMap());       // 店舗マップ
+            output.setCategoryMap(mapOut.getCategoryMap()); // 種別マップ
+            output.setPayerMap(mapOut.getPayerMap());       // 支払者マップ
+            output.setTblExpenseEntity(tblExpenseOut);      // 出費テーブルエンティティ
+
+        } catch (CustomRuntimeException e) {
+
+            throw new CustomRuntimeException("対象の出費明細が存在しません");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,17 +105,11 @@ public class EXP103Service {
     */
     public EXP103ServiceUpdateOut update(EXP103ServiceUpdateIn input) {
 
-        // 出力項目
-        EXP103ServiceUpdateOut output = new EXP103ServiceUpdateOut();
-
-        // 入力項目
-        TblExpenseEntity tblExpenseIn = new TblExpenseEntity();
-
-        // 出費テーブルエンティティ出力
-        TblExpenseEntity tblExpenseOut = new TblExpenseEntity();
-
-        // マップ作成サービス出力
-        CreateMapServiceOut mapOut = new CreateMapServiceOut();
+        // 初期化処理
+        EXP103ServiceUpdateOut output = new EXP103ServiceUpdateOut();   // 出力項目
+        TblExpenseEntity tblExpenseIn = new TblExpenseEntity();         // 入力項目
+        TblExpenseEntity tblExpenseOut = new TblExpenseEntity();        // 出費テーブルエンティティ出力
+        CreateMapServiceOut mapOut = new CreateMapServiceOut();         // マップ作成サービス出力
 
         /* 
          * マップ作成メソッドの呼び出し
@@ -130,24 +130,15 @@ public class EXP103Service {
         try {
 
             // エンティティ設定
-            // 出費ID
-            tblExpenseIn.setId(input.getExpenseId());
-            // 金額
-            tblExpenseIn.setAmount(Integer.valueOf(input.getAmount()));
-            // 店舗ID
-            tblExpenseIn.setStoreId(input.getStoreId());
-            // 種別ID
-            tblExpenseIn.setCategoryId(input.getCategoryId());
-            // 支払者ID
-            tblExpenseIn.setPayerId(input.getPayerId());
-            // 支払日
-            tblExpenseIn.setPaymentDate(paymentDate);
-            // 分割フラグ
-            tblExpenseIn.setSplitFlg(input.getSplitFlg());
-            // 登録日
-            tblExpenseIn.setRegisterDate(nowDate);
-            // 備考
-            tblExpenseIn.setRemarks(input.getRemarks());
+            tblExpenseIn.setId(input.getExpenseId());                       // 出費ID
+            tblExpenseIn.setAmount(Integer.valueOf(input.getAmount()));    // 金額
+            tblExpenseIn.setStoreId(input.getStoreId());                    // 店舗ID
+            tblExpenseIn.setCategoryId(input.getCategoryId());              // 種別ID
+            tblExpenseIn.setPayerId(input.getPayerId());                    // 支払者ID
+            tblExpenseIn.setPaymentDate(paymentDate);                       // 支払日
+            tblExpenseIn.setSplitFlg(input.getSplitFlg());                  // 分割フラグ
+            tblExpenseIn.setRegisterDate(nowDate);                          // 登録日
+            tblExpenseIn.setRemarks(input.getRemarks());                    // 備考
 
             // 更新処理実行
             tblExpenseMapper.update(tblExpenseIn);

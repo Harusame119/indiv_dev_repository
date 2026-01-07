@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.expenses.springboot.common.CustomRuntimeException;
 import com.expenses.springboot.common.ExConstant;
 import com.expenses.springboot.common.dto.CreateMapServiceOut;
 import com.expenses.springboot.common.service.CreateMapService;
@@ -26,97 +27,79 @@ public class EXP101Service {
     @Autowired
     private TblExpenseMapper tblExpenseMapper;
 
-	@Autowired
-	CreateMapService createMapService;
+    @Autowired
+    CreateMapService createMapService;
 
-	/**
-	 * 初期表示情報検索メソッド
-	 */
-	public EXP101FormDto display() {
+    /**
+     * 初期表示情報検索メソッド
+     */
+    public EXP101FormDto display() {
 
-	    // 画面DTO
-		EXP101FormDto exp101FormDto = new EXP101FormDto();
-		// マップ作成サービス出力
-		CreateMapServiceOut mapOut = new CreateMapServiceOut();
+        // 初期化処理
+        EXP101FormDto exp101FormDto = new EXP101FormDto();      // 画面DTO
+        CreateMapServiceOut mapOut = new CreateMapServiceOut(); // マップ作成サービス出力
 
-		/* 
-		 * マップ作成メソッドの呼び出し
-		 * 空白フラグ  ：0（空白なし）
-		 * 対象テーブル：店舗テーブル、種別テーブル、支払者テーブル
-		 */
-		mapOut = createMapService.createMapFromDB(0,
-				ExConstant.TBL_STORE,
-				ExConstant.TBL_CATEGORY,
-				ExConstant.TBL_PAYER);
+        /* 
+         * マップ作成メソッドの呼び出し
+         * 空白フラグ  ：0（空白なし）
+         * 対象テーブル：店舗テーブル、種別テーブル、支払者テーブル
+         */
+        mapOut = createMapService.createMapFromDB(0,
+                ExConstant.TBL_STORE,
+                ExConstant.TBL_CATEGORY,
+                ExConstant.TBL_PAYER);
 
-		// 画面初期表示項目設定
-		// 店舗プルダウンメニュー
-		exp101FormDto.setPulStore(mapOut.getStoreMap());
+        // 画面初期表示項目設定
+        exp101FormDto.setPulStore(mapOut.getStoreMap());                // 店舗プルダウンメニュー
+        exp101FormDto.setPulCategory(mapOut.getCategoryMap());          // 種別プルダウンメニュー
+        exp101FormDto.setPulPayer(mapOut.getPayerMap());                // 支払者プルダウンメニュー
+        exp101FormDto.setRadioSplitFlg(ExConstant.SPLIT_FLG_SPLIT);   // 分割フラグラジオボタン
 
-		// 種別プルダウンメニュー
-		exp101FormDto.setPulCategory(mapOut.getCategoryMap());
+        // 支払日
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String strDate = sdf.format(date);
+        exp101FormDto.setTextPaymentDate(strDate);
 
-		// 支払者プルダウンメニュー
-		exp101FormDto.setPulPayer(mapOut.getPayerMap());
+        return exp101FormDto;
 
-		// 分割フラグラジオボタン
-		exp101FormDto.setRadioSplitFlg(ExConstant.SPLIT_FLG_SPLIT);
+    }
 
-		// 支払日
-		Date date = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String strDate = sdf.format(date);
-		exp101FormDto.setTextPaymentDate(strDate);
+    /**
+     * 出費テーブル登録メソッド
+     */
+    public void register(EXP101ServiceRegisterIn input) {
 
-		return exp101FormDto;
+        try {
 
-	}
+            // 初期化処理
+            TblExpenseEntity tblExpenseIn = new TblExpenseEntity(); // Input用出費テーブルエンティティ
 
-	/**
-	 * 出費テーブル登録メソッド
-	 */
-	public void register(EXP101ServiceRegisterIn input) {
+            // ユーザ名取得
+            String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		try {
+            // 現在日付取得
+            java.sql.Date nowDate = new java.sql.Date(new java.util.Date().getTime());
 
-			// Input用出費テーブルエンティティ
-			TblExpenseEntity tblExpenseIn = new TblExpenseEntity();
+            // 支払日型変換
+            java.sql.Date paymentDate = java.sql.Date.valueOf(input.getPaymentDate());
 
-			// ユーザ名取得
-			String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+            // エンティティ設定
+            tblExpenseIn.setAmount(Integer.valueOf(input.getAmount()));    // 金額
+            tblExpenseIn.setStoreId(input.getStoreId());                    // 店舗ID
+            tblExpenseIn.setCategoryId(input.getCategoryId());              // 種別ID
+            tblExpenseIn.setPayerId(input.getPayerId());                    // 支払者ID
+            tblExpenseIn.setPaymentDate(paymentDate);                       // 支払日
+            tblExpenseIn.setSplitFlg(input.getSplitFlg());                  // 分割フラグ
+            tblExpenseIn.setRegisterDate(nowDate);                          // 登録日
+            tblExpenseIn.setRemarks(input.getRemarks());                    // 備考
+            tblExpenseIn.setUserId(userId);                                 // ユーザID
 
-			// 現在日付取得
-			java.sql.Date nowDate = new java.sql.Date(new java.util.Date().getTime());
+            // 登録処理実行
+            tblExpenseMapper.insert(tblExpenseIn);
 
-			// 支払日型変換
-			java.sql.Date paymentDate = java.sql.Date.valueOf(input.getPaymentDate());
-
-			// エンティティ設定
-			// 金額
-			tblExpenseIn.setAmount(Integer.valueOf(input.getAmount()));
-			// 店舗ID
-			tblExpenseIn.setStoreId(input.getStoreId());
-			// 種別ID
-			tblExpenseIn.setCategoryId(input.getCategoryId());
-			// 支払者ID
-			tblExpenseIn.setPayerId(input.getPayerId());
-			// 支払日
-			tblExpenseIn.setPaymentDate(paymentDate);
-			// 分割フラグ
-			tblExpenseIn.setSplitFlg(input.getSplitFlg());
-			// 登録日
-			tblExpenseIn.setRegisterDate(nowDate);
-			// 備考
-			tblExpenseIn.setRemarks(input.getRemarks());
-			// ユーザID
-			tblExpenseIn.setUserId(userId);
-
-			// 登録処理実行
-			tblExpenseMapper.insert(tblExpenseIn);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        } catch (Exception e) {
+            throw new CustomRuntimeException("登録に失敗しました");
+        }
+    }
 }
-

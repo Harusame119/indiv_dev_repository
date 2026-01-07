@@ -30,83 +30,84 @@ public class CreateMapService {
 
     @Autowired
     private TblPayerMapper payerMapper;
-	/**
-	 * マップ作成メソッド(DB)
-	 */
-	public CreateMapServiceOut createMapFromDB(int blankFlg, String... targetDB) {
 
-		// 出力項目
-		CreateMapServiceOut output = new CreateMapServiceOut();
+    /**
+     * マップ作成メソッド(DB)
+     */
+    public CreateMapServiceOut createMapFromDB(int blankFlg, String... targetDB) {
 
-		// ユーザ名取得
-		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        // 出力項目
+        CreateMapServiceOut output = new CreateMapServiceOut();
 
-		// 引数の配列の項目分繰り返す
-		for (String target : targetDB) {
+        // ユーザ名取得
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-			// 店舗テーブルの場合
-			if (ExConstant.TBL_STORE.equals(target)) {
+        // 引数の配列の項目分繰り返す
+        for (String target : targetDB) {
 
-				// 店舗リスト取得
-				Iterable<TblStoreEntity> storeList = storeMapper.findByUserId(userId);
-				Map<Integer, String> storeMap = new LinkedHashMap<>();
+            // 店舗テーブルの場合
+            if (ExConstant.TBL_STORE.equals(target)) {
 
-				// 空白フラグ＝"1(あり)"の場合
-				if (blankFlg == 1) {
-					storeMap.put(ExConstant.INT_0, ExConstant.STR_BLANK);
-				}
+                // 店舗リスト取得
+                Iterable<TblStoreEntity> storeList = storeMapper.findByUserId(userId);
+                Map<Integer, String> storeMap = new LinkedHashMap<>();
 
-				// 店舗MAP作成
-				for (TblStoreEntity storeInfo : storeList) {
-					storeMap.put(storeInfo.getStoreId(), storeInfo.getStoreName());
-				}
+                // 空白フラグ＝"1(あり)"の場合
+                if (blankFlg == 1) {
+                    storeMap.put(ExConstant.INT_0, ExConstant.STR_BLANK);
+                }
 
-				// 店舗マップを出力項目に設定
-				output.setStoreMap(storeMap);
+                // 店舗MAP作成
+                for (TblStoreEntity storeInfo : storeList) {
+                    storeMap.put(storeInfo.getStoreId(), storeInfo.getStoreName());
+                }
 
-				// 種別テーブルの場合
-			} else if (ExConstant.TBL_CATEGORY.equals(target)) {
+                // 店舗マップを出力項目に設定
+                output.setStoreMap(storeMap);
 
-				// 種別リスト取得
-				Iterable<TblCategoryEntity> categoryList = categoryMapper.findByUserId(userId);
-				Map<Integer, String> categoryMap = new LinkedHashMap<>();
+                // 種別テーブルの場合
+            } else if (ExConstant.TBL_CATEGORY.equals(target)) {
 
-				// 空白フラグ＝"1(あり)"の場合
-				if (blankFlg == 1) {
-					categoryMap.put(ExConstant.INT_0, ExConstant.STR_BLANK);
-				}
+                // 種別リスト取得
+                Iterable<TblCategoryEntity> categoryList = categoryMapper.findByUserId(userId);
+                Map<Integer, String> categoryMap = new LinkedHashMap<>();
 
-				// 種別MAP作成
-				for (TblCategoryEntity categoryInfo : categoryList) {
-					categoryMap.put(categoryInfo.getCategoryId(), categoryInfo.getCategoryName());
-				}
+                // 空白フラグ＝"1(あり)"の場合
+                if (blankFlg == 1) {
+                    categoryMap.put(ExConstant.INT_0, ExConstant.STR_BLANK);
+                }
 
-				// 種別マップを出力項目に設定
-				output.setCategoryMap(categoryMap);
+                // 種別MAP作成
+                for (TblCategoryEntity categoryInfo : categoryList) {
+                    categoryMap.put(categoryInfo.getCategoryId(), categoryInfo.getCategoryName());
+                }
 
-				// 支払者テーブルの場合
-			} else if (ExConstant.TBL_PAYER.equals(target)) {
+                // 種別マップを出力項目に設定
+                output.setCategoryMap(categoryMap);
 
-				// 支払者リスト取得
-				Iterable<TblPayerEntity> payerList = payerMapper.findByUserId(userId);
-				Map<Integer, String> payerMap = new LinkedHashMap<>();
+                // 支払者テーブルの場合
+            } else if (ExConstant.TBL_PAYER.equals(target)) {
 
-				// 空白フラグ＝"1(あり)"の場合
-				if (blankFlg == 1) {
-					payerMap.put(ExConstant.INT_0, ExConstant.STR_BLANK);
-				}
+                // 支払者リスト取得
+                Iterable<TblPayerEntity> payerList = payerMapper.findByUserId(userId);
+                Map<Integer, String> payerMap = new LinkedHashMap<>();
 
-				// 支払者MAP作成
-				for (TblPayerEntity payerInfo : payerList) {
-					payerMap.put(payerInfo.getPayerId(), payerInfo.getPayerName());
-				}
+                // 空白フラグ＝"1(あり)"の場合
+                if (blankFlg == 1) {
+                    payerMap.put(ExConstant.INT_0, ExConstant.STR_BLANK);
+                }
 
-				// 支払者マップを出力項目に設定
-				output.setPayerMap(payerMap);
+                // 支払者MAP作成
+                for (TblPayerEntity payerInfo : payerList) {
+                    payerMap.put(payerInfo.getPayerId(), payerInfo.getPayerName());
+                }
 
-			}
-		}
+                // 支払者マップを出力項目に設定
+                output.setPayerMap(payerMap);
 
-		return output;
-	}
+            }
+        }
+
+        return output;
+    }
 }

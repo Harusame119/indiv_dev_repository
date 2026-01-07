@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.expenses.springboot.common.CustomRuntimeException;
 import com.expenses.springboot.common.ExConstant;
 import com.expenses.springboot.common.dto.CreateMapServiceOut;
 import com.expenses.springboot.common.service.CreateMapService;
@@ -28,179 +29,160 @@ import com.expenses.springboot.repository.TblExpenseMapper;
 @Transactional
 public class EXP102Service {
 
-	@Autowired
-	CreateMapService createMapService;
+    @Autowired
+    CreateMapService createMapService;
 
-	@Autowired
-	private TblExpenseMapper tblExpenseMapper;
+    @Autowired
+    private TblExpenseMapper tblExpenseMapper;
 
-	/**
-	 * 初期表示情報検索メソッド
-	 */
-	public EXP102FormDto display() {
+    /**
+     * 初期表示情報検索メソッド
+     */
+    public EXP102FormDto display() {
 
-		EXP102FormDto exp102FormDto = new EXP102FormDto();
+        EXP102FormDto exp102FormDto = new EXP102FormDto();
 
-		// マップ作成サービス出力
-		CreateMapServiceOut mapOut = new CreateMapServiceOut();
+        // マップ作成サービス出力
+        CreateMapServiceOut mapOut = new CreateMapServiceOut();
 
-		/* 
-		 * マップ作成メソッドの呼び出し
-		 * 空白フラグ  ：1（空白あり）
-		 * 対象テーブル：店舗テーブル、種別テーブル、支払者テーブル
-		 */
-		mapOut = createMapService.createMapFromDB(1,
-				ExConstant.TBL_STORE,
-				ExConstant.TBL_CATEGORY,
-				ExConstant.TBL_PAYER);
+        /* 
+         * マップ作成メソッドの呼び出し
+         * 空白フラグ  ：1（空白あり）
+         * 対象テーブル：店舗テーブル、種別テーブル、支払者テーブル
+         */
+        mapOut = createMapService.createMapFromDB(1,
+                ExConstant.TBL_STORE,
+                ExConstant.TBL_CATEGORY,
+                ExConstant.TBL_PAYER);
 
-		// 画面初期表示項目設定
-		// 店舗プルダウンメニュー
-		exp102FormDto.setPulStore(mapOut.getStoreMap());
+        // 当日日付取得
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String strDate = sdf.format(date);
 
-		// 種別プルダウンメニュー
-		exp102FormDto.setPulCategory(mapOut.getCategoryMap());
+        // 画面初期表示項目設定
+        exp102FormDto.setPulStore(mapOut.getStoreMap());        // 店舗プルダウンメニュー
+        exp102FormDto.setPulCategory(mapOut.getCategoryMap());  // 種別プルダウンメニュー
+        exp102FormDto.setPulPayer(mapOut.getPayerMap());        // 支払者プルダウンメニュー
+        exp102FormDto.setStartYMDSearchCondition(strDate);      // 開始日
+        exp102FormDto.setEndYMDSearchCondition(strDate);        // 終了日
 
-		// 支払者プルダウンメニュー
-		exp102FormDto.setPulPayer(mapOut.getPayerMap());
+        return exp102FormDto;
 
-		// 当日日付取得
-		Date date = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String strDate = sdf.format(date);
+    }
 
-		// 開始日
-		exp102FormDto.setStartYMDSearchCondition(strDate);
+    /**
+     * 出費テーブル検索メソッド
+     */
+    public EXP102ServiceFindOut find(EXP102ServiceFindIn input) {
 
-		// 終了日
-		exp102FormDto.setEndYMDSearchCondition(strDate);
+        // 初期化処理
+        EXP102ServiceFindOut output = new EXP102ServiceFindOut();           // 出力項目
+        List<TblExpenseEntity> tblExpenseList = new ArrayList<>();          // 出費テーブルエンティティリスト
+        ExpenseSearchConditionDto conDto = new ExpenseSearchConditionDto(); // 出費テーブル検索条件Entity
+        CreateMapServiceOut mapOut = new CreateMapServiceOut();             // マップ作成サービス出力
 
-		return exp102FormDto;
+        /* 
+         * マップ作成メソッドの呼び出し
+         * 空白フラグ  ：1（空白あり）
+         * 対象テーブル：店舗テーブル、種別テーブル、支払者テーブル
+         */
+        mapOut = createMapService.createMapFromDB(1,
+                ExConstant.TBL_STORE,
+                ExConstant.TBL_CATEGORY,
+                ExConstant.TBL_PAYER);
 
-	}
+        try {
 
-	/**
-	 * 出費テーブル検索メソッド
-	 */
-	public EXP102ServiceFindOut find(EXP102ServiceFindIn input) {
+            // ユーザ名取得
+            String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		// 出力項目
-		EXP102ServiceFindOut output = new EXP102ServiceFindOut();
+            // 開始日型変換
+            java.sql.Date startDate = java.sql.Date.valueOf(input.getStartDate());
 
-		// 出費テーブルエンティティリスト
-		List<TblExpenseEntity> tblExpenseList = new ArrayList<>();
+            // 終了日型変換
+            java.sql.Date endDate = java.sql.Date.valueOf(input.getEndDate());
 
-		// 出費テーブル検索条件Entity
-		ExpenseSearchConditionDto conDto = new ExpenseSearchConditionDto();
+            // 検索条件設定
+            conDto.setStartDate(startDate);                 // 開始日
+            conDto.setEndDate(endDate);                     // 終了日
+            conDto.setStoreId(input.getStoreId());          // 店舗ID
+            conDto.setCategoryId(input.getCategoryId());    // 種別ID
+            conDto.setPayerId(input.getPayerId());          // 支払者ID
+            conDto.setRemarks(input.getRemarks());          // 備考
+            conDto.setUserId(userId);                       // ユーザID
 
-		// マップ作成サービス出力
-		CreateMapServiceOut mapOut = new CreateMapServiceOut();
+            // 検索条件に従って検索
+            tblExpenseList = tblExpenseMapper.findByCondition(conDto);
 
-		/* 
-		 * マップ作成メソッドの呼び出し
-		 * 空白フラグ  ：1（空白あり）
-		 * 対象テーブル：店舗テーブル、種別テーブル、支払者テーブル
-		 */
-		mapOut = createMapService.createMapFromDB(1,
-				ExConstant.TBL_STORE,
-				ExConstant.TBL_CATEGORY,
-				ExConstant.TBL_PAYER);
+            // 出力項目に設定
+            output.setStoreMap(mapOut.getStoreMap());       // 店舗マップ
+            output.setCategoryMap(mapOut.getCategoryMap()); // 種別マップ
+            output.setPayerMap(mapOut.getPayerMap());       // 支払者マップ
 
-		try {
+            // 出費テーブルリストがnullでない場合、出費テーブル検索結果リストを作成する
+            if (tblExpenseList != null) {
 
-			// ユーザ名取得
-			String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+                // 出費テーブル検索結果作成リスト
+                List<FindExpenseTblResultEntity> resultList = new ArrayList<>();
 
-			// 開始日型変換
-			java.sql.Date startDate = java.sql.Date.valueOf(input.getStartDate());
-	
-			// 終了日型変換
-			java.sql.Date endDate = java.sql.Date.valueOf(input.getEndDate());
+                // 合計金額
+                int sum = 0;
 
-			// 検索条件設定
-			conDto.setStartDate(startDate);
-			conDto.setEndDate(endDate);
-			conDto.setStoreId(input.getStoreId());
-			conDto.setCategoryId(input.getCategoryId());
-			conDto.setPayerId(input.getPayerId());
-			conDto.setRemarks(input.getRemarks());
-			conDto.setUserId(userId);
+                // 取得した出費テーブルエンティティを回す
+                for (TblExpenseEntity entity : tblExpenseList) {
 
-			// 検索条件に従って検索
-			tblExpenseList = tblExpenseMapper.findByCondition(conDto);
+                    // 出費テーブル検索結果エンティティ
+                    FindExpenseTblResultEntity resultEntity = new FindExpenseTblResultEntity();
 
-			// 出力項目に設定
-			output.setStoreMap(mapOut.getStoreMap());
-			output.setCategoryMap(mapOut.getCategoryMap());
-			output.setPayerMap(mapOut.getPayerMap());
+                    // 支払日の変換
+                    SimpleDateFormat sdf = new SimpleDateFormat(ExConstant.DATE_FORMAT_SPLIT_HYPHEN);
+                    String strDate = sdf.format(entity.getPaymentDate());
 
-			// 出費テーブルリストがnullでない場合、出費テーブル検索結果リストを作成する
-			if (tblExpenseList != null) {
+                    // 値の設定
+                    resultEntity.setId(String.valueOf(entity.getId()));                                // ID 
+                    resultEntity.setPaymentDate(strDate);                                               // 支払日
+                    resultEntity.setAmount(entity.getAmount());                                         // 金額
+                    resultEntity.setStoreNm(mapOut.getStoreMap().get(entity.getStoreId()));             // 店舗ID
+                    resultEntity.setCategoryNm(mapOut.getCategoryMap().get(entity.getCategoryId()));    // 種別ID
+                    resultEntity.setPayerNm(mapOut.getPayerMap().get(entity.getPayerId()));             // 支払者ID
 
-				// 出費テーブル検索結果作成リスト
-				List<FindExpenseTblResultEntity> resultList = new ArrayList<>();
+                    // 分割有無が"0"の場合"〇"、"1"の場合"×"
+                    if (ExConstant.SPLIT_FLG_SPLIT.equals(entity.getSplitFlg())) {
+                        resultEntity.setSplitStr(ExConstant.DISP_STR_CIRCLE);
+                    } else if (ExConstant.SPLIT_FLG_NONSPLIT.equals(entity.getSplitFlg())) {
+                        resultEntity.setSplitStr(ExConstant.DISP_STR_CROSS);
+                    }
 
-				// 合計金額
-				int sum = 0;
+                    // 備考が12桁以上の場合、12桁に切り出す
+                    if (entity.getRemarks().length() <= 12) {
+                        resultEntity.setRemarks(entity.getRemarks());
+                    } else {
+                        resultEntity.setRemarks(entity.getRemarks().substring(0, 12));
+                    }
 
-				for (TblExpenseEntity entity : tblExpenseList) {
+                    // 金額を合計金額に加算
+                    sum += entity.getAmount();
 
-					// 出費テーブル検索結果エンティティ
-					FindExpenseTblResultEntity resultEntity = new FindExpenseTblResultEntity();
+                    // 作成した検索結果エンティティを結果リストに格納
+                    resultList.add(resultEntity);
 
-					// 支払日の変換
-					SimpleDateFormat sdf = new SimpleDateFormat(ExConstant.DATE_FORMAT_SPLIT_HYPHEN);
-					String strDate = sdf.format(entity.getPaymentDate());
+                }
 
-					// 値の設定
-					resultEntity.setId(String.valueOf(entity.getId()));
+                // 検索結果を出力項目に設定
+                output.setResultList(resultList);
 
-					resultEntity.setPaymentDate(strDate);
+                // 金額を出力項目に設定
+                output.setSum(sum);
+            }
 
-					resultEntity.setAmount(entity.getAmount());
+        } catch (Exception e) {
+            throw new CustomRuntimeException("照会に失敗しました");
+        }
 
-					resultEntity.setStoreNm(mapOut.getStoreMap().get(entity.getStoreId()));
+        // 返却処理
+        return output;
 
-					resultEntity.setCategoryNm(mapOut.getCategoryMap().get(entity.getCategoryId()));
-
-					resultEntity.setPayerNm(mapOut.getPayerMap().get(entity.getPayerId()));
-
-					// 分割有無が"0"の場合"〇"、"1"の場合"×"
-					if (ExConstant.SPLIT_FLG_SPLIT.equals(entity.getSplitFlg())) {
-						resultEntity.setSplitStr(ExConstant.DISP_STR_CIRCLE);
-					} else if (ExConstant.SPLIT_FLG_NONSPLIT.equals(entity.getSplitFlg())) {
-						resultEntity.setSplitStr(ExConstant.DISP_STR_CROSS);
-					}
-
-					// 備考が12桁以上の場合、12桁に切り出す
-					if (entity.getRemarks().length() <= 12) {
-						resultEntity.setRemarks(entity.getRemarks());
-					} else {
-						resultEntity.setRemarks(entity.getRemarks().substring(0, 12));
-					}
-
-					// 金額を合計金額に加算
-					sum += entity.getAmount();
-
-					// 作成した検索結果エンティティを結果リストに格納
-					resultList.add(resultEntity);
-
-				}
-
-				// 検索結果を出力項目に設定
-				output.setResultList(resultList);
-
-				// 金額を出力項目に設定
-				output.setSum(sum);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		// 返却処理
-		return output;
-
-	}
+    }
 
 }
