@@ -19,7 +19,10 @@
 	    <a href="#"><i class="fas fa-list-alt mr-2"></i> 出費一覧</a>
 	    <a href="#"><i class="fas fa-chart-bar mr-2"></i> 月次レポート</a>
 	    <div class="dropdown-divider border-secondary mx-3"></div>
-	    <a href="/logout"><i class="fas fa-sign-out-alt mr-2"></i> ログアウト</a>
+        <a href="javascript:void(0);" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <i class="fas fa-sign-out-alt mr-2"></i> ログアウト
+        </a>
+        <form id="logout-form" th:action="@{/logout}" method="POST" style="display: none;"></form>
 	</div>
 
 	<!-- サイドバー表示中のオーバーレイ -->

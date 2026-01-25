@@ -16,4 +16,28 @@
     ORDER BY SORT_ORDER
   </select>
 
+  <!-- 登録 -->
+  <insert id="insert" parameterType="com.expenses.springboot.entity.TblCategoryEntity" useGeneratedKeys="true" keyProperty="categoryId">
+    INSERT INTO TBL_CATEGORY (CATEGORY_NAME, USER_ID, SORT_ORDER)
+    VALUES (#{categoryName}, #{userId}, #{sortOrder})
+  </insert>
+
+  <!-- 主キー削除 -->
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    DELETE FROM TBL_CATEGORY
+      <where>
+        CATEGORY_ID = #{categoryId}
+      </where>
+  </delete>
+
+  <!-- 表示順更新 -->
+  <update id="updateSortOrderById" parameterType="com.expenses.springboot.entity.TblCategoryEntity">
+    UPDATE TBL_CATEGORY
+    SET
+    SORT_ORDER = #{sortOrder}
+      <where>
+        CATEGORY_ID = #{categoryId}
+      </where>
+  </update>
+
 </mapper>

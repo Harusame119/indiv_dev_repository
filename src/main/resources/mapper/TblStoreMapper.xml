@@ -6,7 +6,7 @@
 <!-- namespaceはMapperインターフェースの完全修飾名 -->
 <mapper namespace="com.expenses.springboot.repository.TblStoreMapper">
 
-  <!-- ユーザー名で検索するSQL -->
+  <!-- ユーザー名検索 -->
   <select id="findByUserId" parameterType="java.lang.String" resultType="com.expenses.springboot.entity.TblStoreEntity">
     SELECT STORE_ID, STORE_NAME, USER_ID, SORT_ORDER
     FROM TBL_STORE
@@ -16,8 +16,28 @@
     ORDER BY SORT_ORDER
   </select>
 
+  <!-- 登録 -->
   <insert id="insert" parameterType="com.expenses.springboot.entity.TblExpenseEntity" useGeneratedKeys="true" keyProperty="storeId">
     INSERT INTO TBL_STORE (STORE_NAME, USER_ID, SORT_ORDER)
     VALUES (#{storeName}, #{userId}, #{sortOrder})
   </insert>
+
+  <!-- 主キー削除 -->
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    DELETE FROM TBL_STORE
+      <where>
+        STORE_ID = #{storeId}
+      </where>
+  </delete>
+
+  <!-- 表示順更新 -->
+  <update id="updateSortOrderById" parameterType="com.expenses.springboot.entity.TblStoreEntity">
+    UPDATE TBL_STORE
+    SET
+    SORT_ORDER = #{sortOrder}
+      <where>
+        STORE_ID = #{storeId}
+      </where>
+  </update>
+
 </mapper>

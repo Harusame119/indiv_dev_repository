@@ -10,30 +10,30 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.expenses.springboot.common.CustomRuntimeException;
 import com.expenses.springboot.common.ExConstant;
+import com.expenses.springboot.entity.TblCategoryEntity;
 import com.expenses.springboot.entity.TblExpenseEntity;
-import com.expenses.springboot.entity.TblStoreEntity;
-import com.expenses.springboot.exp.dto.EXP111ServiceDeleteIn;
-import com.expenses.springboot.exp.dto.EXP111ServiceDeleteOut;
-import com.expenses.springboot.exp.dto.EXP111ServiceDisplayOut;
-import com.expenses.springboot.exp.dto.EXP111ServiceRegisterIn;
-import com.expenses.springboot.exp.dto.EXP111ServiceUpdateIn;
-import com.expenses.springboot.exp.dto.EXP111ServiceUpdateOut;
+import com.expenses.springboot.exp.dto.EXP112ServiceDeleteIn;
+import com.expenses.springboot.exp.dto.EXP112ServiceDeleteOut;
+import com.expenses.springboot.exp.dto.EXP112ServiceDisplayOut;
+import com.expenses.springboot.exp.dto.EXP112ServiceRegisterIn;
+import com.expenses.springboot.exp.dto.EXP112ServiceUpdateIn;
+import com.expenses.springboot.exp.dto.EXP112ServiceUpdateOut;
 import com.expenses.springboot.exp.dto.ExpenseSearchConditionDto;
+import com.expenses.springboot.repository.TblCategoryMapper;
 import com.expenses.springboot.repository.TblExpenseMapper;
-import com.expenses.springboot.repository.TblStoreMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 店舗マスタ管理サービス
+ * 種別マスタ管理サービス
  */
 @Slf4j
 @Service
 @Transactional
-public class EXP111Service {
+public class EXP112Service {
 
     @Autowired
-    private TblStoreMapper tblStoreMapper;
+    private TblCategoryMapper tblCategoryMapper;
 
     @Autowired
     private TblExpenseMapper tblExpenseMapper;
@@ -41,12 +41,12 @@ public class EXP111Service {
     /**
      * 初期表示情報検索メソッド
      */
-    public EXP111ServiceDisplayOut display() {
+    public EXP112ServiceDisplayOut display() {
 
         // 出力項目
-        EXP111ServiceDisplayOut output = new EXP111ServiceDisplayOut();
+        EXP112ServiceDisplayOut output = new EXP112ServiceDisplayOut();
         // 画面表示用リスト
-        List<TblStoreEntity> tblStoreList = new ArrayList<>();
+        List<TblCategoryEntity> tblCategoryList = new ArrayList<>();
 
         try {
 
@@ -54,10 +54,10 @@ public class EXP111Service {
             String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
             // ユーザ名を条件にして検索
-            tblStoreList = tblStoreMapper.findByUserId(userId);
+            tblCategoryList = tblCategoryMapper.findByUserId(userId);
 
             // 検索結果を出力項目に設定
-            output.setTblStoreList(tblStoreList);
+            output.setTblCategoryList(tblCategoryList);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,12 +69,12 @@ public class EXP111Service {
     }
 
     /**
-     * 店舗テーブル登録メソッド
+     * 種別テーブル登録メソッド
      */
-    public void register(EXP111ServiceRegisterIn input) {
+    public void register(EXP112ServiceRegisterIn input) {
 
-        // Input用店舗テーブルエンティティ
-        TblStoreEntity tblStoreIn = new TblStoreEntity();
+        // Input用種別テーブルエンティティ
+        TblCategoryEntity tblCategoryIn = new TblCategoryEntity();
 
         try {
 
@@ -82,15 +82,15 @@ public class EXP111Service {
             String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
             // 登録項目設定
-            // 店舗名
-            tblStoreIn.setStoreName(input.getStoreName());
+            // 種別名
+            tblCategoryIn.setCategoryName(input.getCategoryName());
             // ユーザ名
-            tblStoreIn.setUserId(userId);
+            tblCategoryIn.setUserId(userId);
             // 表示順
-            tblStoreIn.setSortOrder(ExConstant.INT_DEFAULT_SORT_ORDER);
+            tblCategoryIn.setSortOrder(ExConstant.INT_DEFAULT_SORT_ORDER);
 
             // 登録処理実行
-            tblStoreMapper.insert(tblStoreIn);
+            tblCategoryMapper.insert(tblCategoryIn);
 
             log.info("登録を実行しました");
 
@@ -103,10 +103,10 @@ public class EXP111Service {
     /**
      * 削除メソッド
      */
-    public EXP111ServiceDeleteOut delete(EXP111ServiceDeleteIn input) {
+    public EXP112ServiceDeleteOut delete(EXP112ServiceDeleteIn input) {
 
         // 初期化処理
-        EXP111ServiceDeleteOut output = new EXP111ServiceDeleteOut();       // 出力項目
+        EXP112ServiceDeleteOut output = new EXP112ServiceDeleteOut();       // 出力項目
         List<TblExpenseEntity> tblExpenseList = new ArrayList<>();          // 出費テーブルエンティティリスト
         ExpenseSearchConditionDto conDto = new ExpenseSearchConditionDto(); // 出費テーブル検索条件Entity
 
@@ -116,7 +116,7 @@ public class EXP111Service {
             String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
             // 検索条件設定
-            conDto.setStoreId(input.getStoreId());  // 店舗ID
+            conDto.setCategoryId(input.getCategoryId());  // 種別ID
             conDto.setUserId(userId);               // ユーザID
 
             // 検索条件に従って検索
@@ -126,7 +126,7 @@ public class EXP111Service {
             if (tblExpenseList.size() == 0) {
 
                 // 削除メソッド呼び出し
-                tblStoreMapper.deleteById(input.getStoreId());
+                tblCategoryMapper.deleteById(input.getCategoryId());
 
                 // 検索結果が1件以上ある場合
             } else {
@@ -148,20 +148,20 @@ public class EXP111Service {
     /**
      * 更新メソッド
      */
-    public EXP111ServiceUpdateOut update(EXP111ServiceUpdateIn input) {
+    public EXP112ServiceUpdateOut update(EXP112ServiceUpdateIn input) {
 
         // 初期化処理
-        EXP111ServiceUpdateOut output = new EXP111ServiceUpdateOut();   // 出力項目
-        TblStoreEntity tblStoreIn = new TblStoreEntity();               // 入力項目
+        EXP112ServiceUpdateOut output = new EXP112ServiceUpdateOut();   // 出力項目
+        TblCategoryEntity tblCategoryIn = new TblCategoryEntity();               // 入力項目
 
         // エンティティ設定
-        tblStoreIn.setStoreId(input.getStoreId());
-        tblStoreIn.setSortOrder(input.getSortOrder());
+        tblCategoryIn.setCategoryId(input.getCategoryId());
+        tblCategoryIn.setSortOrder(input.getSortOrder());
 
         try {
 
             // 更新処理実行
-            tblStoreMapper.updateSortOrderById(tblStoreIn);
+            tblCategoryMapper.updateSortOrderById(tblCategoryIn);
 
         } catch (Exception e) {
             throw new CustomRuntimeException("更新に失敗しました");

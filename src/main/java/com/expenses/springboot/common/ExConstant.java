@@ -32,6 +32,8 @@ public static String DISPNM_EXP102 = "EXP102";
 public static String DISPNM_EXP103 = "EXP103";
 /* 画面名＿EXP111:店舗管理画面 */
 public static String DISPNM_EXP111 = "EXP111";
+/* 画面名＿EXP112:種別管理画面 */
+public static String DISPNM_EXP112 = "EXP112";
 /* 画面名＿RPT101:帳票(月次)出力 */
 public static String DISPNM_RPT101 = "RPT101";
 /* 画面名＿Test101:テスト */

@@ -126,7 +126,7 @@ public class EXP103Controller {
     }
 
     /**
-     * 削除メソッド
+     * 出費削除メソッド
      */
     @RequestMapping(value = "/EXP103_EV003", method = RequestMethod.POST)
     public String delete(@Validated @ModelAttribute("formDto") EXP103FormDto formDto,

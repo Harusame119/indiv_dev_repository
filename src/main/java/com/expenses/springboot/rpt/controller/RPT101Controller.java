@@ -86,18 +86,15 @@ public class RPT101Controller {
 			RPT101ServiceTotallingIn rpt101ServiceTotallingIn = new RPT101ServiceTotallingIn();
 
 			// 帳票(月次)出力サービス集計入力設定
-			// 対象年
-			rpt101ServiceTotallingIn.setTargetYear(formDto.getTargetYear());
-			// 対象月
-			rpt101ServiceTotallingIn.setTargetMonth(formDto.getTargetMonth());
-			// 支払者１ ※固定値で"100"を設定
-			rpt101ServiceTotallingIn.setPayerId1(100);
-			// 支払者２ ※固定値で"101"を設定
-			rpt101ServiceTotallingIn.setPayerId2(101);
+			rpt101ServiceTotallingIn.setTargetYear(formDto.getTargetYear());     // 対象年
+			rpt101ServiceTotallingIn.setTargetMonth(formDto.getTargetMonth());   // 対象月
+			rpt101ServiceTotallingIn.setPayerId1(100);                           // 支払者１ ※固定値で"100"を設定
+			rpt101ServiceTotallingIn.setPayerId2(101);                           // 支払者２ ※固定値で"101"を設定
 
 			// 集計処理メソッド呼び出し
 			rpt101ServiceTotallingOut = rpt101Service.totalling(rpt101ServiceTotallingIn);
 
+			// formを設定
 			formDto.setResultEntity(rpt101ServiceTotallingOut.getResultEntity());
 
 		} else {

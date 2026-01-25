@@ -12,6 +12,13 @@ public interface TblCategoryMapper {
 	// 検索(ユーザID)
 	List<TblCategoryEntity> findByUserId(String userId);
 
-//	// 主キー検索
-//	TblCategoryEntity findByCategoryId(int categoryId);
+    // 登録
+    void insert(TblCategoryEntity entity);
+
+    // 主キー削除
+    void deleteById(int id);
+
+    // 更新(表示順)
+    void updateSortOrderById(TblCategoryEntity entity);
+
 }

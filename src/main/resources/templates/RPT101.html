@@ -9,117 +9,143 @@
 <title>RPT101:帳票(月次)出力</title>
 </head>
 <body>
-	<nav class="sticky-top bd-subnavbar py-1 mb-4 shadow" style="background-color:rgb(248, 225, 194);">
-		<div class="container">
-			<div class="row mb-1 mt-1">
-				<div class="col-6 d-flex">
-					<h1 th:text="#{system.subtitle.expense}"></h1>
-					<img th:src="@{/images/R.png}" class="img-fluid" style="max-height: 40px; width: auto;">
-				</div>
-				<div class="col-6 d-flex justify-content-end align-items-center">
-					<div class="me-3 mr-3">
-						<h5 th:text="'ログイン者：' + ${session.userName}"></h5>
-					</div>
-					<div>
-						<form method="get" action="/ptl102_EV001">
-							<input type="submit" class="btn btn-outline-secondary" value="メインメニューへ戻る"/>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</nav>
+    <!-- サイドメニュー -->
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <h4 class="text-white ml-4 mb-3">メニュー</h4>
+        <a href="/ptl102_EV001"><i class="fas fa-home mr-2"></i> メインメニュー</a>
+        <a href="/EXP101_EV001"><i class="fas fa-plus-circle mr-2"></i> 出費登録</a>
+        <a href="/EXP102_EV001"><i class="fas fas fa-search mr-2"></i> 出費照会</a>
+        <a href="#"><i class="fas fa-list-alt mr-2"></i> 出費一覧</a>
+        <a href="#"><i class="fas fa-chart-bar mr-2"></i> 月次レポート</a>
+        <div class="dropdown-divider border-secondary mx-3"></div>
+        <a href="javascript:void(0);" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <i class="fas fa-sign-out-alt mr-2"></i> ログアウト
+        </a>
+        <form id="logout-form" th:action="@{/logout}" method="POST" style="display: none;"></form>
+    </div>
 
-	<!-- タイトル -->
-	<div class="container">
-		<div class="row">
-			<h3 th:text="#{RPT101.title}"></h3>
-		</div>
-	</div>
+    <!-- サイドバー表示中のオーバーレイ -->
+    <div id="sidebar-overlay" class="overlay" onclick="closeNav()"></div>
 
-	<!-- 隠しメッセージ -->
-	<th:block th:if="${formDto.hdnMsg != null}">
-		<div class="container">
-			<div class="alert alert-success" role="alert">
-			  <p class="m-auto" th:text="${formDto.hdnMsg}"></p>
-			</div>
-		</div>
-	</th:block>
-    <!-- エラーメッセージ -->
-    <th:block th:if="${errMsg}">
-        <div class="container">
-            <div class="alert alert-danger" role="alert">
-                <p class="m-auto" th:text="${errMsg}"></p>
+    <!-- ヘッダー -->
+    <div id="main">
+        <nav class="sticky-top bd-subnavbar py-1 mb-4 shadow" style="background-color:rgb(248, 225, 194);">
+            <div class="container">
+                <div class="row mb-1 mt-1">
+                    <div class="col-6 d-flex align-items-center">
+                        <button class="btn mr-3" type="button" onclick="openNav()" style="background-color: #F5EFE7; border-color: #D7CCC8; color: #5D4037;">
+                            <span class="navbar-toggler-icon"><i class="fas fa-bars"></i></span>
+                        </button>
+                        <h1 th:text="#{system.subtitle.expense}"></h1>
+                        <img th:src="@{/images/R.png}" class="img-fluid" style="max-height: 40px; width: auto;">
+                    </div>                    
+                    <div class="col-6 d-flex justify-content-end align-items-center">
+                        <div class="me-3 mr-3">
+                            <h5 th:text="'ログイン者：' + ${session.userName}"></h5>
+                        </div>
+                        <div>
+                            <form method="get" action="/ptl102_EV001">
+                                <input type="submit" class="btn btn-outline-secondary" value="メインメニューへ戻る"/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </th:block>
+        </nav>
+    
+    	<!-- タイトル -->
+    	<div class="container">
+    		<div class="row">
+    			<h3 th:text="#{RPT101.title}"></h3>
+    		</div>
+    	</div>
+    
+    	<!-- 隠しメッセージ -->
+    	<th:block th:if="${formDto.hdnMsg != null}">
+    		<div class="container">
+    			<div class="alert alert-success" role="alert">
+    			  <p class="m-auto" th:text="${formDto.hdnMsg}"></p>
+    			</div>
+    		</div>
+    	</th:block>
+        <!-- エラーメッセージ -->
+        <th:block th:if="${errMsg}">
+            <div class="container">
+                <div class="alert alert-danger" role="alert">
+                    <p class="m-auto" th:text="${errMsg}"></p>
+                </div>
+            </div>
+        </th:block>
 
-	<!-- コンテンツエリア -->
-	<div class="container shadow-sm pt-4 pb-4 pr-3 pl-3 mb-5 bg-body rounded border border-3" style="background-color: #f5f5f5;">
-		<form method="post" action="/RPT101_EV002" th:object="${formDto}">
-			<!-- CSRF hidden フィールド -->
-			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-			<div class="row">
-				<div class="form-group col-3">
-					<label for="pulTargetYear">対象年</label>
-					<select th:field="*{targetYear}" class="dropdown form-control">
-						<option th:each="year : ${formDto.pulTargetYear}" th:value="${year.key}" th:text="${year.value}"></option>
-					</select>
-				</div>
-				<div class="form-group col-3">
-					<label for="pulTargetMonth">対象月</label>
-					<select th:field="*{targetMonth}" class="dropdown form-control">
-						<option th:each="month : ${formDto.pulTargetMonth}" th:value="${month.key}" th:text="${month.value}"></option>
-					</select>
-				</div>
-			</div>
-			<div class="border mb-3"></div>
-			<div class="d-flex justify-content-end">
-				<div class="mr-3">
-					<button type="submit" class="btn btn-secondary shadow btn-lg"><i class="fas fa-search"></i> 集計</button>
-				</div>
-			</div>
-		</form>
-	</div>
-	<th:block th:if="${formDto.resultEntity != null}">
-		<div class="container">
-			<h4 class="mb-4">集計結果</h4>
-			<table class="table" th:inline="text">
-				<thead class="table-warning">
-					<tr>
-						<th class="col-2">分割有無</th>
-						<th class="col-3">[[${formDto.resultEntity.payer1}]]</th>
-						<th class="col-3">[[${formDto.resultEntity.payer2}]]</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td class="col-2">〇</td>
-						<td class="col-3">[[${formDto.resultEntity.payAmountSplit1}]]</td>
-						<td class="col-3">[[${formDto.resultEntity.payAmountSplit2}]]</td>
-					</tr>
-					<tr>
-						<td class="col-2">×</td>
-						<td class="col-3">[[${formDto.resultEntity.payAmountUnSplit1}]]</td>
-						<td class="col-3">[[${formDto.resultEntity.payAmountUnSplit2}]]</td>
-					</tr>
-				</tbody>
-			</table>
-			<table class="table col-6" th:inline="text">
-				<thead class="table-warning">
-					<tr>
-						<th class="col-3">支払者</th>
-						<th class="col-3">支払金額</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td class="col-3">[[${formDto.resultEntity.payer}]]</td>
-						<td class="col-3">[[${formDto.resultEntity.settlementAmount}]]</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</th:block>
+    	<!-- コンテンツエリア -->
+    	<div class="container shadow-sm pt-4 pb-4 pr-3 pl-3 mb-5 bg-body rounded border border-3" style="background-color: #f5f5f5;">
+    		<form method="post" action="/RPT101_EV002" th:object="${formDto}">
+    			<!-- CSRF hidden フィールド -->
+    			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    			<div class="row">
+    				<div class="form-group col-3">
+    					<label for="pulTargetYear">対象年</label>
+    					<select th:field="*{targetYear}" class="dropdown form-control">
+    						<option th:each="year : ${formDto.pulTargetYear}" th:value="${year.key}" th:text="${year.value}"></option>
+    					</select>
+    				</div>
+    				<div class="form-group col-3">
+    					<label for="pulTargetMonth">対象月</label>
+    					<select th:field="*{targetMonth}" class="dropdown form-control">
+    						<option th:each="month : ${formDto.pulTargetMonth}" th:value="${month.key}" th:text="${month.value}"></option>
+    					</select>
+    				</div>
+    			</div>
+    			<div class="border mb-3"></div>
+    			<div class="d-flex justify-content-end">
+    				<div class="mr-3">
+    					<button type="submit" class="btn btn-secondary shadow btn-lg"><i class="fas fa-search"></i> 集計</button>
+    				</div>
+    			</div>
+    		</form>
+    	</div>
+    	<th:block th:if="${formDto.resultEntity != null}">
+    		<div class="container">
+    			<h4 class="mb-4">集計結果</h4>
+    			<table class="table" th:inline="text">
+    				<thead class="table-warning">
+    					<tr>
+    						<th class="col-2">分割有無</th>
+    						<th class="col-3">[[${formDto.resultEntity.payer1}]]</th>
+    						<th class="col-3">[[${formDto.resultEntity.payer2}]]</th>
+    					</tr>
+    				</thead>
+    				<tbody>
+    					<tr>
+    						<td class="col-2">〇</td>
+    						<td class="col-3">[[${formDto.resultEntity.payAmountSplit1}]]</td>
+    						<td class="col-3">[[${formDto.resultEntity.payAmountSplit2}]]</td>
+    					</tr>
+    					<tr>
+    						<td class="col-2">×</td>
+    						<td class="col-3">[[${formDto.resultEntity.payAmountUnSplit1}]]</td>
+    						<td class="col-3">[[${formDto.resultEntity.payAmountUnSplit2}]]</td>
+    					</tr>
+    				</tbody>
+    			</table>
+    			<table class="table col-6" th:inline="text">
+    				<thead class="table-warning">
+    					<tr>
+    						<th class="col-3">支払者</th>
+    						<th class="col-3">支払金額</th>
+    					</tr>
+    				</thead>
+    				<tbody>
+    					<tr>
+    						<td class="col-3">[[${formDto.resultEntity.payer}]]</td>
+    						<td class="col-3">[[${formDto.resultEntity.settlementAmount}]]</td>
+    					</tr>
+    				</tbody>
+    			</table>
+    		</div>
+    	</th:block>
+    </div>
+    <script src="/js/expenses_common.js"></script>
 </body>
 </html>

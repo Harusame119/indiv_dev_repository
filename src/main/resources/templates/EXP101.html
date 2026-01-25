@@ -19,7 +19,10 @@
         <a href="#"><i class="fas fa-list-alt mr-2"></i> 出費一覧</a>
         <a href="#"><i class="fas fa-chart-bar mr-2"></i> 月次レポート</a>
         <div class="dropdown-divider border-secondary mx-3"></div>
-        <a href="/logout"><i class="fas fa-sign-out-alt mr-2"></i> ログアウト</a>
+        <a href="javascript:void(0);" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <i class="fas fa-sign-out-alt mr-2"></i> ログアウト
+        </a>
+        <form id="logout-form" th:action="@{/logout}" method="POST" style="display: none;"></form>
     </div>
 
     <!-- サイドバー表示中のオーバーレイ -->
@@ -83,7 +86,7 @@
                 <div class="row">
                     <div class="form-group col">
                         <label for="textAmount">金額<b class="required"> ＊</b></label>
-                        <input type="text" th:field="*{textAmount}" class="form-control" maxlength="7" required />
+                        <input type="text" th:field="*{textAmount}" class="form-control" maxlength="7" required autofocus />
                         <div class="invalid-feedback">金額は必須項目です</div>
                     </div>
                     <div class="form-group col">

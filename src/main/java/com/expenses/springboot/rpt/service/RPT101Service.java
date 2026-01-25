@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.expenses.springboot.common.CustomRuntimeException;
 import com.expenses.springboot.common.ExConstant;
 import com.expenses.springboot.entity.TblExpenseEntity;
 import com.expenses.springboot.entity.TblPayerEntity;
@@ -26,142 +27,210 @@ import com.expenses.springboot.rpt.dto.RPT101TotallingResultEntity;
 @Service
 public class RPT101Service {
 
-	@Autowired
-	TblExpenseMapper tblExpenseMapper;
+    @Autowired
+    TblExpenseMapper tblExpenseMapper;
 
-	@Autowired
-	TblPayerMapper tblPayerMapper;
+    @Autowired
+    TblPayerMapper tblPayerMapper;
 
-	/**
-	 * 帳票集計メソッド
-	 */
-	public RPT101ServiceTotallingOut totalling(RPT101ServiceTotallingIn input) {
+    /**
+     * 帳票集計メソッド
+     */
+    public RPT101ServiceTotallingOut totalling(RPT101ServiceTotallingIn input) {
 
-		// 出力項目
-		RPT101ServiceTotallingOut output = new RPT101ServiceTotallingOut();
+        // 初期化処理
+        RPT101ServiceTotallingOut output = new RPT101ServiceTotallingOut();                         // 出力項目
+        List<TblExpenseEntity> tblExpenseList = new ArrayList<>();                                  // 出費テーブルエンティティリスト
+        ExpenseSearchConditionDto conDto = new ExpenseSearchConditionDto();                         // 出費テーブル検索条件Entity
+        RPT101TotallingResultEntity c101TotallingResultEntity = new RPT101TotallingResultEntity();  // 帳票(月次)出力集計結果Entity
 
-		// ユーザ名取得
-		String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        // ユーザ名取得
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		// 出費テーブルエンティティリスト
-		List<TblExpenseEntity> tblExpenseList = new ArrayList<>();
+        // 支払者リスト取得
+        Iterable<TblPayerEntity> payerList = tblPayerMapper.findByUserId(userId);
+        Map<Integer, String> payerMap = new LinkedHashMap<>();
 
-		// 出費テーブル検索条件Entity
-		ExpenseSearchConditionDto conDto = new ExpenseSearchConditionDto();
+        // 支払者MAP作成
+        for (TblPayerEntity payerInfo : payerList) {
+            payerMap.put(payerInfo.getPayerId(), payerInfo.getPayerName());
+        }
 
-		// 帳票(月次)出力集計結果Entity
-		RPT101TotallingResultEntity c101TotallingResultEntity = new RPT101TotallingResultEntity();
+        try {
 
-		// 支払者リスト取得
-		Iterable<TblPayerEntity> payerList = tblPayerMapper.findByUserId(userId);
-		Map<Integer, String> payerMap = new LinkedHashMap<>();
+            // 検索条件設定メソッド呼び出し
+            conDto = createSearchCodition(input);
 
-		// 支払者MAP作成
-		for (TblPayerEntity payerInfo : payerList) {
-			payerMap.put(payerInfo.getPayerId(), payerInfo.getPayerName());
-		}
+            // ユーザID設定
+            conDto.setUserId(userId);
 
-		try {
+            // 検索条件に従って検索
+            tblExpenseList = tblExpenseMapper.findByCondition(conDto);
 
-			// 検索条件設定メソッド呼び出し
-			conDto = createSearchCodition(input);
+            // 検索結果が0件でない場合
+            if (tblExpenseList.size() != ExConstant.INT_0) {
 
-			// 検索条件に従って検索
-			tblExpenseList = tblExpenseMapper.findByCondition(conDto);
+                // 出費テーブルリスト集計メソッドの呼び出し
+                c101TotallingResultEntity = totallingTblExpense(tblExpenseList, input, payerMap);
 
-			// 検索結果が0件でない場合
-			if (tblExpenseList.size() != ExConstant.INT_0) {
+                // 出力項目に設定
+                output.setResultEntity(c101TotallingResultEntity);
 
-				// 出費テーブルリスト集計メソッドの呼び出し
-				c101TotallingResultEntity = totallingTblExpense(tblExpenseList, input, payerMap);
+            }
 
-				// 出力項目に設定
-				output.setResultEntity(c101TotallingResultEntity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-			}
+        return output;
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+    }
 
-		return output;
+    /**
+     * 検索条件設定メソッド
+     */
+    private ExpenseSearchConditionDto createSearchCodition(RPT101ServiceTotallingIn input) throws Exception {
 
-	}
+        // 出力項目
+        ExpenseSearchConditionDto output = new ExpenseSearchConditionDto();
 
-	/**
-	 * 検索条件設定メソッド
-	 */
-	private ExpenseSearchConditionDto createSearchCodition(RPT101ServiceTotallingIn input) throws Exception {
+        // カレンダーインスタンスを取得
+        Calendar cal = Calendar.getInstance();
 
-		// 出力項目
-		ExpenseSearchConditionDto output = new ExpenseSearchConditionDto();
+        // 対象月の最終日を取得
+        cal.set(Calendar.YEAR, Integer.valueOf(input.getTargetYear()));
+        cal.set(Calendar.MONTH, Integer.valueOf(input.getTargetMonth()) - 1);
+        int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-		// カレンダーインスタンスを取得
-		Calendar cal = Calendar.getInstance();
+        // 結合文字列
+        StringBuilder startDateStr = new StringBuilder();
+        StringBuilder endDateStr = new StringBuilder();
 
-		// 対象月の最終日を取得
-		cal.set(Calendar.YEAR, Integer.valueOf(input.getTargetYear()));
-		cal.set(Calendar.MONTH, Integer.valueOf(input.getTargetMonth()) - 1);
-		int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        // 対象月の開始日編集処理
+        startDateStr.append(input.getTargetYear());
+        startDateStr.append(ExConstant.STR_HYPHEN);
+        startDateStr.append(input.getTargetMonth());
+        startDateStr.append(ExConstant.STR_HYPHEN);
+        startDateStr.append(ExConstant.STR_01);
 
-		// 結合文字列
-		StringBuilder startDateStr = new StringBuilder();
-		StringBuilder endDateStr = new StringBuilder();
+        // 開始日型変換
+        java.sql.Date startDate = java.sql.Date.valueOf(startDateStr.toString());
 
-		// 対象月の開始日編集処理
-		startDateStr.append(input.getTargetYear());
-		startDateStr.append(ExConstant.STR_HYPHEN);
-		startDateStr.append(input.getTargetMonth());
-		startDateStr.append(ExConstant.STR_HYPHEN);
-		startDateStr.append(ExConstant.STR_01);
+        // 対象月の最終日編集処理
+        endDateStr.append(input.getTargetYear());
+        endDateStr.append(ExConstant.STR_HYPHEN);
+        endDateStr.append(input.getTargetMonth());
+        endDateStr.append(ExConstant.STR_HYPHEN);
+        endDateStr.append(lastDay);
 
-		// 開始日型変換
-		java.sql.Date startDate = java.sql.Date.valueOf(startDateStr.toString());
+        // 終了日型変換
+        java.sql.Date endDate = java.sql.Date.valueOf(endDateStr.toString());
 
-		// 対象月の最終日編集処理
-		endDateStr.append(input.getTargetYear());
-		endDateStr.append(ExConstant.STR_HYPHEN);
-		endDateStr.append(input.getTargetMonth());
-		endDateStr.append(ExConstant.STR_HYPHEN);
-		endDateStr.append(lastDay);
+        // 出力項目設定
+        output.setStartDate(startDate);
+        output.setEndDate(endDate);
 
-		// 終了日型変換
-		java.sql.Date endDate = java.sql.Date.valueOf(endDateStr.toString());
+        // 返却処理
+        return output;
 
-		// 出力項目設定
-		output.setStartDate(startDate);
-		output.setEndDate(endDate);
+    }
 
-		// 返却処理
-		return output;
+    /**
+     * 出費テーブルリスト集計メソッド
+     */
+    private RPT101TotallingResultEntity totallingTblExpense(List<TblExpenseEntity> inputList,
+            RPT101ServiceTotallingIn input, Map<Integer, String> payerMap) {
 
-	}
+        // 初期化処理
+        RPT101TotallingResultEntity output = new RPT101TotallingResultEntity(); // 出力項目
+        int payAmountSplit1 = ExConstant.INT_0;     // 支払金額分割有(支払者1)
+        int payAmountSplit2 = ExConstant.INT_0;     // 支払金額分割有(支払者2)
+        int payAmountUnSplit1 = ExConstant.INT_0;   // 支払金額分割無(支払者1)
+        int payAmountUnSplit2 = ExConstant.INT_0;   // 支払金額分割無(支払者2)
+        int payAmountPerPerson = ExConstant.INT_0;  // 支払金額1人当
 
-	/**
-	 * 出費テーブルリスト集計メソッド
-	 */
-	private RPT101TotallingResultEntity totallingTblExpense(List<TblExpenseEntity> inputList,
-			RPT101ServiceTotallingIn input, Map<Integer, String> payerMap) {
+        // 集計処理
+        for (TblExpenseEntity entity : inputList) {
 
-		// 出力項目
-		RPT101TotallingResultEntity output = new RPT101TotallingResultEntity();
+            // 出費エンティティの支払者が支払者1の場合
+            if (entity.getPayerId() == input.getPayerId1()) {
+                // 分割フラグが"0"(分割有)の場合
+                if (entity.getSplitFlg().equals("0")) {
 
-		// 支払者毎にリスト作成
+                    // 支払金額分割有(支払者1)に設定
+                    payAmountSplit1 += entity.getAmount();
 
-		// 分割フラグ毎にフラグ作成
+                    // 分割フラグが"1"(分割無)の場合
+                } else {
 
+                    // 支払金額分割無(支払者1)に設定
+                    payAmountUnSplit1 += entity.getAmount();
 
-		// 疎通用スタブデータ
-		output.setPayer1("うしお");
-		output.setPayer2("なつみ");
-		output.setPayAmountSplit1("100000");
-		output.setPayAmountSplit2("80000");
-		output.setPayAmountUnSplit1("0");
-		output.setPayAmountUnSplit2("3000");
-		output.setPayer("なつみ");
-		output.setSettlementAmount("7000");
+                }
 
-		return output;
-	}
+                // 出費エンティティの支払者が支払者2の場合
+            } else if (entity.getPayerId() == input.getPayerId2()) {
+                // 分割フラグが"0"(分割有)の場合
+                if (entity.getSplitFlg().equals("0")) {
+
+                    // 支払金額分割有(支払者2)に設定
+                    payAmountSplit2 += entity.getAmount();
+
+                    // 分割フラグが"1"(分割無)の場合
+                } else {
+
+                    // 支払金額分割無(支払者2)に設定
+                    payAmountUnSplit2 += entity.getAmount();
+
+                }
+
+                // 出費エンティティの支払者が想定外の値の場合
+            } else {
+                throw new CustomRuntimeException("支払者IDが想定外の値、再実行してください");
+            }
+        }
+
+        // 集計結果を元に支払額を決定
+        payAmountPerPerson = (payAmountSplit1 + payAmountSplit2) / 2;
+
+        // 支払金額分割有(支払者1) > 支払金額分割有(支払者2)の場合
+        if (payAmountSplit1 > payAmountSplit2) {
+
+            // 支払者に支払者2を設定
+            output.setPayer(payerMap.get(input.getPayerId2()));
+
+            // 支払金額を設定
+            output.setSettlementAmount(String.valueOf(payAmountPerPerson - payAmountSplit2));
+
+            // 支払金額分割有(支払者2) > 支払金額分割有(支払者1)の場合
+        } else if (payAmountSplit2 > payAmountSplit1) {
+
+            // 支払者に支払者1を設定
+            output.setPayer(payerMap.get(input.getPayerId1()));
+
+            // 支払金額を設定
+            output.setSettlementAmount(String.valueOf(payAmountPerPerson - payAmountSplit1));
+
+            // 支払金額分割有(支払者1) = 支払金額分割有(支払者2)の場合
+        } else {
+
+            // 支払者に支払者1を設定
+            output.setPayer("支払い無し");
+
+            // 支払金額を設定
+            output.setSettlementAmount("0");
+
+        }
+
+        // 出力項目設定
+        output.setPayer1(payerMap.get(input.getPayerId1()));
+        output.setPayer2(payerMap.get(input.getPayerId2()));
+        output.setPayAmountSplit1(String.valueOf(payAmountSplit1));
+        output.setPayAmountSplit2(String.valueOf(payAmountSplit2));
+        output.setPayAmountUnSplit1(String.valueOf(payAmountUnSplit1));
+        output.setPayAmountUnSplit2(String.valueOf(payAmountUnSplit2));
+
+        return output;
+    }
 
 }

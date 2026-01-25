@@ -6,7 +6,7 @@
 <!-- namespaceはMapperインターフェースの完全修飾名 -->
 <mapper namespace="com.expenses.springboot.repository.TblExpenseMapper">
 
-  <!-- 全検索 -->
+  <!-- ユーザー名検索 -->
   <select id="findAll" parameterType="java.lang.String" resultType="com.expenses.springboot.entity.TblExpenseEntity">
     SELECT ID, AMOUNT, STORE_ID, CATEGORY_ID, PAYER_ID, PAYMENT_DATE, SPLIT_FLG, REMARKS, REGISTER_DATE, USER_ID
     FROM TBL_EXPENSE
@@ -31,7 +31,7 @@
       <where>
         <!-- 日付範囲 -->
         <if test="startDate != null and endDate != null">
-          PAYMENT_DATE BETWEEN #{startDate} AND #{endDate}
+          AND PAYMENT_DATE BETWEEN #{startDate} AND #{endDate}
         </if>
         <!-- storeIdが0以外なら条件に追加 -->
         <if test="storeId != null and storeId != 0">
