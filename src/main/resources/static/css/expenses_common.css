@@ -1,5 +1,15 @@
 @charset "UTF-8";
 
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
 label {
 	font-weight: bold;
 }
@@ -7,43 +17,77 @@ label {
 .required {
 	color: red;
 }
-
-/* カスタムサイドバーのスタイル */
+/* サイドバー本体 */
 .sidebar {
     height: 100%;
-    width: 0; /* デフォルトで非表示 */
+    width: 0;
     position: fixed;
-    z-index: 1050;
+    z-index: 2000;
     top: 0;
     left: 0;
-    background-color: #5D4037; 
+    background: linear-gradient(180deg, #3E2723 0%, #1B110F 100%); /* 深い茶色のグラデーション */
     overflow-x: hidden;
-    transition: 0.3s;
-    padding-top: 60px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+    transition: 0.4s;
+    padding-top: 20px;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.3);
 }
 
-.sidebar a {
-    padding: 15px 15px 15px 32px;
-    text-decoration: none;
-    font-size: 20px;
-    color: #FBEBDD; 
-    display: block;
-    transition: 0.3s;
-}
-
-.sidebar a:hover {
-    background-color: #795548;
-    color: #FFECB3;
-}
-
+/* 閉じるボタンの調整 */
 .sidebar .closebtn {
     position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
-    color: #f8f9fa;
+    top: 5px;          /* 少し上に詰める */
+    right: 15px;       /* 少し右に寄せる */
+    font-size: 24px;   /* 36pxから24pxにサイズダウン */
+    color: #D7CCC8;
+    text-decoration: none;
+    transition: 0.3s;
+    line-height: 1;    /* 行の高さを抑えて余白を最小限に */
+}
+
+.sidebar .closebtn:hover {
+    color: #ffffff;
+    transform: scale(1.1); /* ホバー時に少しだけ大きくして操作感を出す */
+}
+
+/* メニュータイトル */
+.sidebar-header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #D7CCC8;
+    border-bottom: 1px solid rgba(215, 204, 200, 0.2);
+    padding-bottom: 15px;
+    margin: 0 20px 20px 20px;
+}
+
+/* 各メニューリンク */
+.sidebar a {
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 1rem;
+    color: #BCAAA4;
+    display: block;
+    transition: 0.3s;
+    border-left: 5px solid transparent; /* 左端のアクセント線（初期状態は透明） */
+}
+
+/* ホバー時の挙動 */
+.sidebar a:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left: 5px solid #8D6E63; /* ホバー時に茶色の線が浮き出る */
+    padding-left: 35px; /* 少し右にスライドするアニメーション */
+}
+
+/* アイコンの間隔 */
+.sidebar i {
+    width: 25px;
+    text-align: center;
+}
+
+/* 区切り線 */
+.sidebar .dropdown-divider {
+    border-top: 1px solid rgba(215, 204, 200, 0.1);
 }
 
 /* サイドバーが開いているときにメインコンテンツを覆うオーバーレイのスタイル */
@@ -65,4 +109,31 @@ label {
 /* メインコンテンツの調整 (サイドバーが開いたときに移動させる場合は使用) */
 #main {
     transition: margin-left .3s;
+    flex: 1 0 auto;
+}
+
+/* タイトル用の共通クラス */
+.page-title {
+    color: #4e342e; /* 指定の焦げ茶色 */
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 0; /* Bootstrapのデフォルト余白をリセット */
+}
+
+/* 前画面へ戻るボタン */
+.btn-return {
+    border-radius: 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-return:hover {
+    background-color: #4e342e;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* フッター */
+footer {
+    flex-shrink: 0;
 }

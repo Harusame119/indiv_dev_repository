@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="common_sidebar" id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">
+            <i class="fas fa-times"></i>
+        </a>
+        
+        <div class="sidebar-header">
+            <i class="fas fa-th-list mr-2"></i>MENU
+        </div>
+
+        <a href="/ptl102_EV001"><i class="fas fa-home"></i> メインメニュー</a>
+        <a href="/EXP101_EV001"><i class="fas fa-plus-circle"></i> 出費登録</a>
+        <a href="/EXP102_EV001"><i class="fas fa-search"></i> 出費照会</a>
+        <a href="#"><i class="fas fa-list-alt"></i> 出費一覧</a>
+        <a href="#"><i class="fas fa-chart-bar"></i> 月次レポート</a>
+        
+        <div class="dropdown-divider mx-3 my-3"></div>
+        
+        <a href="javascript:void(0);" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <i class="fas fa-sign-out-alt"></i> ログアウト
+        </a>
+        <form id="logout-form" th:action="@{/logout}" method="POST" style="display: none;"></form>
+    </div>
+</body>
+</html>

@@ -7,17 +7,8 @@
 <title>Login</title>
 </head>
 <body>
-	<!-- ヘッダー -->
-	<nav class="sticky-top bd-subnavbar py-1 mb-4 shadow" style="background-color:rgb(248, 225, 194);">
-		<div class="container">
-			<div class="row mb-1 mt-1">
-				<div class="col-6 d-flex">
-					<h1 th:text="#{system.title}"></h1>
-					<img th:src="@{/images/R.png}" class="img-fluid" style="max-height: 40px; width: auto;">
-				</div>
-			</div>
-		</div>
-	</nav>
+    <!-- 共通パーツ:ヘッダー -->
+    <div th:replace="~{common/header :: login_header(#{system.title})}"></div>
 
     <!-- エラーメッセージ -->
     <th:block th:if="${errMsg}">
@@ -29,7 +20,7 @@
     </th:block>
 
 	<!-- コンテンツエリア -->
-	<div class="container">
+	<div class="container mt-4">
 		<h2>ログイン</h2>
 		<form th:action="@{/login}" method="post">
 			<div>

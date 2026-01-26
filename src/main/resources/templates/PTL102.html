@@ -9,60 +9,37 @@
 <title>PTL102:サブメニュー(家計簿)</title>
 </head>
 <body>
-	<!-- サイドメニュー -->
-	<div id="mySidebar" class="sidebar">
-	    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-	    <h4 class="text-white ml-4 mb-3">メニュー</h4>
-	    <a href="/ptl102_EV001"><i class="fas fa-home mr-2"></i> メインメニュー</a>
-	    <a href="/EXP101_EV001"><i class="fas fa-plus-circle mr-2"></i> 出費登録</a>
-	    <a href="/EXP102_EV001"><i class="fas fas fa-search mr-2"></i> 出費照会</a>
-	    <a href="#"><i class="fas fa-list-alt mr-2"></i> 出費一覧</a>
-	    <a href="#"><i class="fas fa-chart-bar mr-2"></i> 月次レポート</a>
-	    <div class="dropdown-divider border-secondary mx-3"></div>
-        <a href="javascript:void(0);" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            <i class="fas fa-sign-out-alt mr-2"></i> ログアウト
-        </a>
-        <form id="logout-form" th:action="@{/logout}" method="POST" style="display: none;"></form>
-	</div>
+    <!-- サイドメニュー -->
+    <div th:replace="~{common/sidebar :: common_sidebar}"></div>
 
 	<!-- サイドバー表示中のオーバーレイ -->
 	<div id="sidebar-overlay" class="overlay" onclick="closeNav()"></div>
 
-	<!-- ヘッダー -->
-	<div id="main">
-		<nav class="sticky-top bd-subnavbar py-1 mb-4 shadow" style="background-color:rgb(248, 225, 194);">
-			<div class="container">
-				<div class="row mb-1 mt-1">
-					<div class="col-6 d-flex align-items-center">
-					    <button class="btn mr-3" type="button" onclick="openNav()" style="background-color: #F5EFE7; border-color: #D7CCC8; color: #5D4037;">
-					        <span class="navbar-toggler-icon"><i class="fas fa-bars"></i></span>
-					    </button>
-					    <h1 th:text="#{system.subtitle.expense}"></h1>
-					    <img th:src="@{/images/R.png}" class="img-fluid" style="max-height: 40px; width: auto;">
-					</div>                    
-					<div class="col-6 d-flex justify-content-end align-items-center">
-						<div class="me-3 mr-3">
-							<h5 th:text="'ログイン者：' + ${session.userName}"></h5>
-						</div>
-						<div>
-							<form method="get" action="/ptl101">
-								<input type="submit" class="btn btn-outline-secondary" value="ポータルへ戻る"/>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</nav>
+    <!-- 画面全体 -->
+    <div id="main">
 
-		<!-- コンテンツエリア -->
-		<div class="container">
-			<div class="d-flex align-items-center mb-4 pb-2 border-bottom border-secondary" style="border-width: 3px !important;">
-			    <i class="fas fa-folder-open fa-2x mr-3" style="color: #5D4037;"></i>
-			    <h2 class="mb-0" th:text="#{system.submenu.title.main}"></h2>
-			</div>
-		</div>
+        <!-- 共通パーツ:ヘッダー -->
+        <div th:replace="~{common/header :: common_header(#{system.subtitle.expense})}"></div>
+
+        <!-- タイトル -->
+        <div class="container my-4">
+            <div class="row d-flex justify-content-between align-items-center">
+                <div class="col-auto">
+                    <h3 class="page-title" th:text="#{system.subtitle.expense}"></h3>
+                </div>
+                
+                <div class="col-auto">
+                    <form method="get" action="/ptl101">
+                        <button type="submit" class="btn btn-outline-secondary btn-return shadow-sm">
+                            <i class="fas fa-undo-alt mr-1"></i> ポータルへ戻る
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
 		<div class="container shadow-sm pt-4 pb-4 pr-3 pl-3 mb-5 bg-body rounded border border-3" style="background-color: #f5f5f5;">
-			<h3 th:text="#{system.submenu.title.expense}"></h3>
+			<h4 th:text="#{system.submenu.title.expense}"></h4>
 			<table class="table">
 				<tr>
 					<td><a href="/EXP101_EV001">出費登録</a></td>
@@ -74,7 +51,7 @@
 					<td><a href="/RPT101_EV001">帳票出力</a></td>
 				</tr>
 			</table>
-			<h3 th:text="#{system.submenu.title.mstmng}"></h3>
+			<h4 th:text="#{system.submenu.title.mstmng}"></h4>
 			<table class="table">
 				<tr>
 					<td><a href="/ptl111_EV001">マスタ管理</a></td>
@@ -82,6 +59,7 @@
 			</table>
 		</div>
 	</div>
+    <div th:replace="~{common/footer :: common_footer}"></div>
 	<script src="/js/expenses_common.js"></script>
 </body>
 </html>
