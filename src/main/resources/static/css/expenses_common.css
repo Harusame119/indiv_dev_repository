@@ -32,21 +32,21 @@ label {
     box-shadow: 5px 0 15px rgba(0,0,0,0.3);
 }
 
-/* 閉じるボタンの調整 */
+/* 閉じるボタン */
 .sidebar .closebtn {
     position: absolute;
-    top: 5px;          /* 少し上に詰める */
-    right: 15px;       /* 少し右に寄せる */
-    font-size: 24px;   /* 36pxから24pxにサイズダウン */
+    top: 5px;
+    right: 15px;
+    font-size: 24px;
     color: #D7CCC8;
     text-decoration: none;
     transition: 0.3s;
-    line-height: 1;    /* 行の高さを抑えて余白を最小限に */
+    line-height: 1;
 }
 
 .sidebar .closebtn:hover {
     color: #ffffff;
-    transform: scale(1.1); /* ホバー時に少しだけ大きくして操作感を出す */
+    transform: scale(1.1); /* ホバー時に1.1倍 */
 }
 
 /* メニュータイトル */
@@ -98,12 +98,9 @@ label {
     left: 0;
     width: 100%;
     height: 100%;
-    /* 半透明の黒で薄暗くする */
-    background-color: rgba(0, 0, 0, 0.5);
-    /* サイドバー (z-index: 1050) の下に配置 */
-    z-index: 1040; 
-    /* デフォルトで非表示 */
-    display: none; 
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒で薄暗くする */
+    z-index: 1040; /* サイドバー (z-index: 1050) の下に配置 */
+    display: none; /* デフォルトで非表示 */
 }
 
 /* メインコンテンツの調整 (サイドバーが開いたときに移動させる場合は使用) */

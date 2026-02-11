@@ -4,54 +4,18 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/expenses_common.css">
+    <link rel="stylesheet" href="/css/PTL101.css">
     <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
     <title>PTL101:メインメニュー</title>
-    <style>
-        /* この画面専用のシンプル調整 */
-        .menu-container {
-            background-color: #ffffff !important;
-            border: 1px solid #D7CCC8 !important;
-            border-radius: 15px !important;
-        }
-        .menu-item-card {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            background: #FDFBF9;
-            border: 1px solid #EFEBE9;
-            border-radius: 12px;
-            color: #5D4037;
-            text-decoration: none !important;
-            transition: 0.3s;
-            margin-bottom: 10px;
-        }
-        .menu-item-card:hover {
-            background: #F5EFE7;
-            border-color: #D7CCC8;
-            transform: translateX(5px);
-        }
-        .menu-icon {
-            font-size: 1.5rem;
-            margin-right: 15px;
-            color: #8D6E63;
-        }
-        .menu-title {
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-    </style>
 </head>
 <body>
-    <div th:replace="~{common/sidebar :: common_sidebar}"></div>
-    <div id="sidebar-overlay" class="overlay" onclick="closeNav()"></div>
-
     <div id="main">
-        <div th:replace="~{common/header :: common_header(#{system.title})}"></div>
+        <div th:replace="~{common/header :: portal_header(#{system.title})}"></div>
 
         <div class="container my-4">
             <div class="row d-flex justify-content-between align-items-center">
                 <div class="col-auto">
-                    <h3 class="page-title" th:text="#{system.title}"></h3>
+                    <h3 class="page-title" th:text="#{PTL101.title}"></h3>
                 </div>
                 <div class="col-auto">
                     <form method="post" action="/logout">
@@ -68,7 +32,6 @@
             <h5 class="mb-4 pb-2 border-bottom" style="color: #8D6E63; font-weight: bold;">
                 <i class="fas fa-th-large mr-2"></i>メニューを選択してください
             </h5>
-            
             <div class="row">
                 <div class="col-md-6">
                     <a href="/ptl102_EV001" class="menu-item-card shadow-sm">
@@ -78,8 +41,27 @@
                         <div class="menu-title" th:text="#{system.subtitle.expense}"></div>
                         <i class="fas fa-chevron-right ml-auto"></i>
                     </a>
-
-                    </div>
+                </div>
+                <div class="col-md-6">
+                    <a href="#" class="menu-item-card shadow-sm">
+                        <div class="menu-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="menu-title" th:text="実装をお楽しみに！"></div>
+                        <i class="fas fa-chevron-right ml-auto"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="row" sec:authorize="hasRole('ADMIN')">
+                <div class="col-md-6">
+                    <a href="#" class="menu-item-card shadow-sm">
+                        <div class="menu-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="menu-title" th:text="管理者メニュー"></div>
+                        <i class="fas fa-chevron-right ml-auto"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

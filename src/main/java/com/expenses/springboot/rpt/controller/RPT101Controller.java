@@ -27,99 +27,97 @@ import com.expenses.springboot.rpt.service.RPT101Service;
 @Controller
 public class RPT101Controller {
 
-	@Autowired
-	RPT101Service rpt101Service;
+    @Autowired
+    RPT101Service rpt101Service;
 
-	/**
-	 * 初期表示メソッド
-	 */
-	@RequestMapping(value="/RPT101_EV001" ,method=RequestMethod.GET)
-	public String display(Model model) {
+    /**
+     * 初期表示メソッド
+     */
+    @RequestMapping(value = "/RPT101_EV001", method = RequestMethod.GET)
+    public String display(Model model) {
 
-		// 遷移先画面名
-		String dispNm = ExConstant.DISPNM_RPT101;
+        // 遷移先画面名
+        String dispNm = ExConstant.DISPNM_RPT101;
 
-		// 初期表示処理
-		RPT101FormDto formDto = new RPT101FormDto();
+        // 初期表示処理
+        RPT101FormDto formDto = new RPT101FormDto();
 
-		// 対象年プルダウンメニュー
-		formDto.setPulTargetYear(CreateCommonUtility.createYearMap());
+        // 対象年プルダウンメニュー
+        formDto.setPulTargetYear(CreateCommonUtility.createYearMap());
 
-		// 対象月プルダウンメニュー
-		formDto.setPulTargetMonth(CreateCommonUtility.createMonthMap());
+        // 対象月プルダウンメニュー
+        formDto.setPulTargetMonth(CreateCommonUtility.createMonthMap());
 
-		// 現在年月取得
-		Calendar cal = Calendar.getInstance();
-		String currentYear = String.valueOf(cal.get(Calendar.YEAR));
-		String currentMonth = String.valueOf(cal.get(Calendar.MONTH) + 1);
+        // 現在年月取得
+        Calendar cal = Calendar.getInstance();
+        String currentYear = String.valueOf(cal.get(Calendar.YEAR));
+        String currentMonth = String.valueOf(cal.get(Calendar.MONTH) + 1);
 
-		// プルダウンの初期選択項目を設定
-		formDto.setTargetYear(currentYear);
-		formDto.setTargetMonth(currentMonth);
+        // プルダウンの初期選択項目を設定
+        formDto.setTargetYear(currentYear);
+        formDto.setTargetMonth(currentMonth);
 
-		// formを設定
-		model.addAttribute("formDto", formDto);
+        // formを設定
+        model.addAttribute("formDto", formDto);
 
-		// 画面遷移
-		return dispNm;
+        // 画面遷移
+        return dispNm;
 
-	}
+    }
 
-	/**
-	 * 帳票情報集計メソッド
-	 */
-	@RequestMapping(value="/RPT101_EV002" ,method=RequestMethod.POST)
-	public String find(@Validated @ModelAttribute("formDto") RPT101FormDto formDto,
-			BindingResult result,
-			Model model) {
+    /**
+     * 帳票情報集計メソッド
+     */
+    @RequestMapping(value = "/RPT101_EV002", method = RequestMethod.POST)
+    public String find(@Validated @ModelAttribute("formDto") RPT101FormDto formDto,
+            BindingResult result,
+            Model model) {
 
-		// 初期化処理
-		// 遷移先画面名
-		String dispNm = ExConstant.DISPNM_RPT101;
+        // 初期化処理
+        // 遷移先画面名
+        String dispNm = ExConstant.DISPNM_RPT101;
 
-		// 帳票(月次)出力サービス集計出力
-		RPT101ServiceTotallingOut rpt101ServiceTotallingOut = new RPT101ServiceTotallingOut();
+        // 帳票(月次)出力サービス集計出力
+        RPT101ServiceTotallingOut rpt101ServiceTotallingOut = new RPT101ServiceTotallingOut();
 
-		if (!result.hasErrors()) {
+        if (!result.hasErrors()) {
 
-			// 帳票(月次)出力サービス集計入力
-			RPT101ServiceTotallingIn rpt101ServiceTotallingIn = new RPT101ServiceTotallingIn();
+            // 帳票(月次)出力サービス集計入力
+            RPT101ServiceTotallingIn rpt101ServiceTotallingIn = new RPT101ServiceTotallingIn();
 
-			// 帳票(月次)出力サービス集計入力設定
-			rpt101ServiceTotallingIn.setTargetYear(formDto.getTargetYear());     // 対象年
-			rpt101ServiceTotallingIn.setTargetMonth(formDto.getTargetMonth());   // 対象月
-			rpt101ServiceTotallingIn.setPayerId1(100);                           // 支払者１ ※固定値で"100"を設定
-			rpt101ServiceTotallingIn.setPayerId2(101);                           // 支払者２ ※固定値で"101"を設定
+            // 帳票(月次)出力サービス集計入力設定
+            rpt101ServiceTotallingIn.setTargetYear(formDto.getTargetYear());    // 対象年
+            rpt101ServiceTotallingIn.setTargetMonth(formDto.getTargetMonth());  // 対象月
 
-			// 集計処理メソッド呼び出し
-			rpt101ServiceTotallingOut = rpt101Service.totalling(rpt101ServiceTotallingIn);
+            // 集計処理メソッド呼び出し
+            rpt101ServiceTotallingOut = rpt101Service.totalling(rpt101ServiceTotallingIn);
 
-			// formを設定
-			formDto.setResultEntity(rpt101ServiceTotallingOut.getResultEntity());
+            // formを設定
+            formDto.setResultEntity(rpt101ServiceTotallingOut.getResultEntity());
 
-		} else {
+        } else {
 
-		}
+        }
 
-		// 対象年プルダウンメニュー
-		formDto.setPulTargetYear(CreateCommonUtility.createYearMap());
+        // 対象年プルダウンメニュー
+        formDto.setPulTargetYear(CreateCommonUtility.createYearMap());
 
-		// 対象月プルダウンメニュー
-		formDto.setPulTargetMonth(CreateCommonUtility.createMonthMap());
+        // 対象月プルダウンメニュー
+        formDto.setPulTargetMonth(CreateCommonUtility.createMonthMap());
 
-		// 検索結果が０件の場合、メッセージ表示
-		if (formDto.getResultEntity() == null) {
-			formDto.setHdnMsg("集計対象が０件でした");
-		} else {
-			formDto.setHdnMsg(null);
-		}
+        // 検索結果が０件の場合、メッセージ表示
+        if (formDto.getResultEntity() == null) {
+            formDto.setHdnMsg("集計対象が０件でした");
+        } else {
+            formDto.setHdnMsg(null);
+        }
 
-		// formを設定
-		model.addAttribute("formDto", formDto);
+        // formを設定
+        model.addAttribute("formDto", formDto);
 
-		// 画面遷移
-		return dispNm;
+        // 画面遷移
+        return dispNm;
 
-	}
+    }
 
 }

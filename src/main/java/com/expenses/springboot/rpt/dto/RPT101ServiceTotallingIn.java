@@ -14,10 +14,4 @@ public class RPT101ServiceTotallingIn {
 	// 対象月
 	private String targetMonth;
 
-	// 支払者ID１
-	private int payerId1;
-
-	// 支払者ID２
-	private int payerId2;
-
 }

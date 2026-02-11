@@ -43,20 +43,27 @@ public class RPT101Service {
         List<TblExpenseEntity> tblExpenseList = new ArrayList<>();                                  // 出費テーブルエンティティリスト
         ExpenseSearchConditionDto conDto = new ExpenseSearchConditionDto();                         // 出費テーブル検索条件Entity
         RPT101TotallingResultEntity c101TotallingResultEntity = new RPT101TotallingResultEntity();  // 帳票(月次)出力集計結果Entity
+        Map<Integer, String> payerMap = new LinkedHashMap<>();                                      // 支払者MAP
 
         // ユーザ名取得
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // 支払者リスト取得
-        Iterable<TblPayerEntity> payerList = tblPayerMapper.findByUserId(userId);
-        Map<Integer, String> payerMap = new LinkedHashMap<>();
-
-        // 支払者MAP作成
-        for (TblPayerEntity payerInfo : payerList) {
-            payerMap.put(payerInfo.getPayerId(), payerInfo.getPayerName());
-        }
-
         try {
+
+            // 支払者リスト取得
+            List<TblPayerEntity> payerList = tblPayerMapper.findByUserId(userId);
+
+            // 支払者リストが2件でない場合
+            if (payerList.size() != 2) {
+
+                // 例外をスロー
+                throw new CustomRuntimeException("支払者テーブルのユーザレコードが2件以外の値になっています");
+            }
+
+            // 支払者MAP作成
+            for (TblPayerEntity payerInfo : payerList) {
+                payerMap.put(payerInfo.getPayerId(), payerInfo.getPayerName());
+            }
 
             // 検索条件設定メソッド呼び出し
             conDto = createSearchCodition(input);
@@ -71,7 +78,7 @@ public class RPT101Service {
             if (tblExpenseList.size() != ExConstant.INT_0) {
 
                 // 出費テーブルリスト集計メソッドの呼び出し
-                c101TotallingResultEntity = totallingTblExpense(tblExpenseList, input, payerMap);
+                c101TotallingResultEntity = totallingTblExpense(tblExpenseList, input, payerList);
 
                 // 出力項目に設定
                 output.setResultEntity(c101TotallingResultEntity);
@@ -139,7 +146,7 @@ public class RPT101Service {
      * 出費テーブルリスト集計メソッド
      */
     private RPT101TotallingResultEntity totallingTblExpense(List<TblExpenseEntity> inputList,
-            RPT101ServiceTotallingIn input, Map<Integer, String> payerMap) {
+            RPT101ServiceTotallingIn input, List<TblPayerEntity> payerList) {
 
         // 初期化処理
         RPT101TotallingResultEntity output = new RPT101TotallingResultEntity(); // 出力項目
@@ -149,11 +156,14 @@ public class RPT101Service {
         int payAmountUnSplit2 = ExConstant.INT_0;   // 支払金額分割無(支払者2)
         int payAmountPerPerson = ExConstant.INT_0;  // 支払金額1人当
 
+        TblPayerEntity payer1 = payerList.get(0);   // 支払者1
+        TblPayerEntity payer2 = payerList.get(1);   // 支払者2
+
         // 集計処理
         for (TblExpenseEntity entity : inputList) {
 
             // 出費エンティティの支払者が支払者1の場合
-            if (entity.getPayerId() == input.getPayerId1()) {
+            if (entity.getPayerId() == payer1.getPayerId()) {
                 // 分割フラグが"0"(分割有)の場合
                 if (entity.getSplitFlg().equals("0")) {
 
@@ -169,7 +179,7 @@ public class RPT101Service {
                 }
 
                 // 出費エンティティの支払者が支払者2の場合
-            } else if (entity.getPayerId() == input.getPayerId2()) {
+            } else if (entity.getPayerId() == payer2.getPayerId()) {
                 // 分割フラグが"0"(分割有)の場合
                 if (entity.getSplitFlg().equals("0")) {
 
@@ -197,7 +207,7 @@ public class RPT101Service {
         if (payAmountSplit1 > payAmountSplit2) {
 
             // 支払者に支払者2を設定
-            output.setPayer(payerMap.get(input.getPayerId2()));
+            output.setPayer(payer2.getPayerName());
 
             // 支払金額を設定
             output.setSettlementAmount(String.valueOf(payAmountPerPerson - payAmountSplit2));
@@ -206,7 +216,7 @@ public class RPT101Service {
         } else if (payAmountSplit2 > payAmountSplit1) {
 
             // 支払者に支払者1を設定
-            output.setPayer(payerMap.get(input.getPayerId1()));
+            output.setPayer(payer1.getPayerName());
 
             // 支払金額を設定
             output.setSettlementAmount(String.valueOf(payAmountPerPerson - payAmountSplit1));
@@ -223,8 +233,8 @@ public class RPT101Service {
         }
 
         // 出力項目設定
-        output.setPayer1(payerMap.get(input.getPayerId1()));
-        output.setPayer2(payerMap.get(input.getPayerId2()));
+        output.setPayer1(payer1.getPayerName());
+        output.setPayer2(payer2.getPayerName());
         output.setPayAmountSplit1(String.valueOf(payAmountSplit1));
         output.setPayAmountSplit2(String.valueOf(payAmountSplit2));
         output.setPayAmountUnSplit1(String.valueOf(payAmountUnSplit1));
